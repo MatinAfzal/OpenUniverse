@@ -39,7 +39,7 @@ class Shematic:
         np.savetxt("world.txt", terrain)
         
     def load_gen(self):
-        return np.loadtxt("world.txt")
+        return np.loadtxt("saves\world.txt")
     
     def locate(self, x, z):
         result = self.terrain_shematic[x:x+8, z:z+8]

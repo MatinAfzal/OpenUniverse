@@ -1,0 +1,21 @@
+
+    $ TIME $
+    / START: 2024-05-10 22:04:16.295732 | END: 2024-05-10 22:04:21.461938
+
+    $ BUILD $
+    / CPU: Intel64 Family 6 Model 183 Stepping 1, GenuineIntel | GPU: NVIDIA GeForce RTX 4060 | SYS: Windows | VER: 10.0.22631 | REL: 11
+    
+    $ FPS $
+    / MIN: 0 | MAX: 62 | AVE: 57.44897959183673
+    
+    $ CPU $
+    / CPU: Intel64 Family 6 Model 183 Stepping 1, GenuineIntel | TOTAL CORES: 20 | PYSICAL CORES: 14
+    / INDEX - PERCENT
+    /USAGE: [(0, 1.6), (1, 0.0), (2, 0.0), (3, 0.0), (4, 0.0), (5, 0.0), (6, 0.0), (7, 0.0), (8, 0.0), (9, 0.0), (10, 3.1), (11, 0.0), (12, 0.0), (13, 1.6), (14, 0.0), (15, 0.0), (16, 0.0), (17, 0.0), (18, 1.6), (19, 0.0)]
+    
+    $ GPU $
+    / GPU: NVIDIA GeForce RTX 4060 | ID: 0 | TOTAL MEMORY: 8188.0MB | TEMP: 44.0 °C
+    
+    $ SYSTEM $
+    / NODE: Matin | MACHINE: AMD64 | BOOT: 1714770703.474444
+    

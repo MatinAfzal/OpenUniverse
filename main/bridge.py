@@ -45,22 +45,19 @@ class MultiShaders(Screen):
         print("Loading Files...")
         
         # Shaders
-        texturevert = r"texturedvert.vs"
-        texturefrag = r"texturedfrag.vs"
-        vertexcolvert = r"vertexcolvert.vs"
-        vertexcolfrag = r"vertexcolfrag.vs"
+        texturevert = r"shaders\texturedvert.vs"
+        texturefrag = r"shaders/texturedfrag.vs"
+        vertexcolvert = r"shaders/vertexcolvert.vs"
+        vertexcolfrag = r"shaders/vertexcolfrag.vs"
         
         # imgs
-        self.img_treebase = r"tree_base.png"
-        self.img_grass = r"grass.png"
-        self.img_texture = r"texture.png"
-        self.img_dirt = r"dirt.jpg"
-        self.img_icu = r"ICU.png"
+        self.img_texture = r"images\texture.png"
+        self.img_icu = r"images\ICU.png"
         
         # objects
-        self.obj_cube = r"cube.obj"
-        self.obj_donut = r"donut.obj"
-        self.obj_granny = r"granny.obj"
+        self.obj_cube = r"models\cube.obj"
+        self.obj_donut = r"models\donut.obj"
+        self.obj_granny = r"models\granny.obj"
         
         # musics
         self.music_c14 = r"COPY RIGHT!"
@@ -85,8 +82,8 @@ class MultiShaders(Screen):
         self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=pygame.Vector3(80, 20, 80), scale=pygame.Vector3(8, 8, 8))
           
         # Object Attachs
-        self.terrain = ChunkAttach(number=20)
-        self.trees = TreeAttach(number=20)
+        self.terrain = ChunkAttach(number=5)
+        self.trees = TreeAttach(number=5)
         
         # Cell Attaches
         self.world = CellAttach(self.terrain.terrain, shader=self.mat, image=self.img_texture, chunk=False)

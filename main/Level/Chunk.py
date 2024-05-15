@@ -223,14 +223,14 @@ class Chunk(Mesh):
                     level_uvs_ind.extend([
                         20 + 24 * uv_counter, 21 + 24 * uv_counter, 22 + 24 * uv_counter, # TRIANGLE 1
                         22 + 24 * uv_counter, 21 + 24 * uv_counter, 23 + 24 * uv_counter, # TRIANGLE 2
-                        4 + 24 * uv_counter, 5 + 24 * uv_counter, 6 + 24 * uv_counter, # TRIANGLE 3
-                        6 + 24 * uv_counter, 5 + 24 * uv_counter, 7 + 24 * uv_counter, # TRIANGLE 4
-                        8 + 24 * uv_counter, 9 + 24 * uv_counter, 10 + 24 * uv_counter, # TRIANGLE 5
-                        10 + 24 * uv_counter, 9 + 24 * uv_counter, 11 + 24 * uv_counter, # TRIANGLE 6
+                        4  + 24 * uv_counter, 5  + 24 * uv_counter, 6  + 24 * uv_counter, # TRIANGLE 3
+                        6  + 24 * uv_counter, 5  + 24 * uv_counter, 7  + 24 * uv_counter, # TRIANGLE 4
+                        8  + 24 * uv_counter, 9  + 24 * uv_counter, 10 + 24 * uv_counter, # TRIANGLE 5
+                        10 + 24 * uv_counter, 9  + 24 * uv_counter, 11 + 24 * uv_counter, # TRIANGLE 6
                         16 + 24 * uv_counter, 17 + 24 * uv_counter, 18 + 24 * uv_counter, # TRIANGLE 7
                         18 + 24 * uv_counter, 17 + 24 * uv_counter, 19 + 24 * uv_counter, # TRIANGLE 8
-                        0 + 24 * uv_counter, 1 + 24 * uv_counter, 2 + 24 * uv_counter, # TRIANGLE 9
-                        2 + 24 * uv_counter, 1 + 24 * uv_counter, 3 + 24 * uv_counter, # TRIANGLE 10
+                        0  + 24 * uv_counter, 1  + 24 * uv_counter, 2  + 24 * uv_counter, # TRIANGLE 9
+                        2  + 24 * uv_counter, 1  + 24 * uv_counter, 3  + 24 * uv_counter, # TRIANGLE 10
                         12 + 24 * uv_counter, 13 + 24 * uv_counter, 14 + 24 * uv_counter, # TRIANGLE 11
                         14 + 24 * uv_counter, 13 + 24 * uv_counter, 15 + 24 * uv_counter, # TRIANGLE 12
                     ])

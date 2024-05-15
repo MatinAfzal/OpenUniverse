@@ -2,11 +2,9 @@
 import os
 import psutil
 import GPUtil
-import pygame
 import platform as pl
 import numpy as np
 from OpenGL.GL import *
-from json import dump
 from math import sqrt
 from .RenderDistance import *
 
@@ -105,7 +103,7 @@ def save_report(fps_list, start_time, end_time, time_based=False):
         
         try:
             dt_string = start_time.strftime("%d.%m.%Y--%H.%M.%S")
-            with open(f"{os.path.abspath("Reports")}\\{dt_string}.txt", "w") as report_file:
+            with open(f"report\{dt_string}.txt", "w") as report_file:
                 report_file.write(report)
         except:
             return 0
@@ -114,7 +112,7 @@ def save_report(fps_list, start_time, end_time, time_based=False):
             return 1
 
     try:
-        with open(f"{os.path.abspath("report")}\\engine_report.txt", "w") as report_file:
+        with open(f"report\engine_report.txt", "w") as report_file:
             report_file.write(report)
     except:
         return 0
