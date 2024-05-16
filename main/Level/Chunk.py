@@ -249,26 +249,26 @@ class Chunk(Mesh):
                     uv_counter += 1
                     dirt = False
 
-                # Normals
-                for i in range(24):
-                    level_normals.append(normals[i])
+                    # Normals
+                    for i in range(24):
+                        level_normals.append(normals[i])
 
-                level_normals_ind.extend([
-                    0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
-                    2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
-                    4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
-                    6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
-                    8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,
-                    10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,
-                    12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,
-                    14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,
-                    16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,
-                    18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,
-                    20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,
-                    22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter
-                ])
+                    level_normals_ind.extend([
+                        0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
+                        2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
+                        4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
+                        6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
+                        8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,
+                        10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,
+                        12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,
+                        14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,
+                        16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,
+                        18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,
+                        20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,
+                        22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter
+                    ])
 
-                normal_counter += 1
+                    normal_counter += 1
 
         return level_vertices, level_triangles, level_uvs, level_uvs_ind, level_normals, level_normals_ind
     

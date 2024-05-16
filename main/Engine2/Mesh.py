@@ -3,7 +3,6 @@ from .DataHandler import *
 from .Uniform import *
 from .Transformations import *
 from .Texture import *
-from .RenderDistance import *
 from .Cullings.ChunkRenderDistance import *
 
 
@@ -106,10 +105,5 @@ class Mesh():
         
     def draw(self, camera, light):
         "Drawing mesh"
-        
-        if self.memory_save:
-            if is_on_distance(camera, self.position, self.memory_save_chunk, self.distance_range) and is_on_forward(camera, self):
-                self.draw_force(camera, light)
 
-        else:
-            self.draw_force(camera, light)
+        self.draw_force(camera, light)

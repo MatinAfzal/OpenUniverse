@@ -1,9 +1,10 @@
+import pygame
+
 from Engine2.Screen import *
 from Engine2.LoadObject import *
 from Engine2.Light import *
 from Engine2.Material import *
 from Engine2.Axes import *
-from Engine2.RenderDistance import *
 from Engine2.CellAttach import *
 from Engine2.Settings2 import *
 from Level.ChunkAttach import *
@@ -81,15 +82,18 @@ class MultiShaders(Screen):
 
         # Entity
         print("Loading Entitis...")
-        self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat) 
-        self.light = Light(pygame.Vector3(0, 0, 0), pygame.Vector3(1, 1, 1), 0)        
-        # self.donut = LoadObject(self.obj_donut, self.img_dirt, material=self.mat, location=pygame.Vector3(16, 5, 16))
+        self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
+        self.light_pos = pygame.Vector3(20, 30, 20)
+        self.lightbolb_pos = pygame.Vector3(self.light_pos.x, self.light_pos.y + 5, self.light_pos.z)
+        self.light = Light(self.light_pos, pygame.Vector3(1, 1, 1), 0)
+        # self.donut = LoadObject(self.obj_donut, self.img_cube, material=self.mat, location=pygame.Vector3(16, 5, 16))
         self.camera = Camera(self.screen_width, self.screen_height)
         # self.human = LoadObject(self.obj_granny, imagefile=self.img_grass, draw_type=GL_TRIANGLES, material=self.mat, scale=pygame.Vector3(0.02, 0.02, 0.02), location=pygame.Vector3(26, 5, 41))
-        self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=pygame.Vector3(80, 20, 80), scale=pygame.Vector3(8, 8, 8))
+        self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+
         # Object Attachs
-        self.terrain = ChunkAttach(number=5)
-        self.trees = TreeAttach(number=5)
+        self.terrain = ChunkAttach(number=7)
+        self.trees = TreeAttach(number=7)
         
         # Cell Attaches
         cell_start = datetime.now()
@@ -104,6 +108,10 @@ class MultiShaders(Screen):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glLight
+
+        # light = [self.light_pos.x, self.light_pos.y, self.light_pos.z, 0.0]
+        # glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, [0, 0, -1])
 
     def camera_init(self):
         pass
@@ -161,13 +169,14 @@ class MultiShaders(Screen):
         self.world.world.draw(self.camera, self.light)
         self.forest.world.draw(self.camera, self.light)
         self.cube0.draw(self.camera, self.light)
+
         # self.donut.draw(self.camera, self.light)
         # self.human.draw(self.camera, self.light)
-        
-        self.light.position = pygame.Vector3(self.camera.transformation[0, 3], self.camera.transformation[1, 3], self.camera.transformation[2, 3])
-        self.light.update(self.mat.program_id) 
-               
-        # self.light.position = pygame.Vector3(self.camera.transformation[0, 3]+1000, self.camera.transformation[1, 3], self.camera.transformation[2, 3]+1000)
+
+        # self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
+        # self.light.update(self.mat.program_id)
+
+        # self.light.position = pygame.Vector3(-self.light_pos.x, self.light_pos.y, -self.light_pos.z)
         # self.light.update(self.mat.program_id)
         
 if __name__ == "__main__":

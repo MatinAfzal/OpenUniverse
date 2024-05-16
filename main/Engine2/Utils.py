@@ -5,8 +5,6 @@ import GPUtil
 import platform as pl
 import numpy as np
 from OpenGL.GL import *
-from math import sqrt
-from .RenderDistance import *
 
 
 def format_vertices(coordinates, triangles) -> np.ndarray:
@@ -133,26 +131,3 @@ def gpinfo():
         gpu_total_memory = f"{gpu.memoryTotal}MB"
         gpu_temperature = f"{gpu.temperature} °C"
     return gpu_id, gpu_name, gpu_total_memory, gpu_temperature
-
-
-def print_render_info(camera, object, distance):
-    diff = sqrt(
-        (camera.transformation[0, 3] - object.position[0])**2 +
-        (camera.transformation[1, 3] - object.position[1])**2 +
-        (camera.transformation[2, 3] - object.position[2])**2
-    )
-    
-    forward = pygame.math.Vector3(0, 0, 1)
-    forward.x = camera.transformation[0, 2]
-    forward.y = camera.transformation[1, 2]
-    forward.z = camera.transformation[2, 2]
-    forward.normalize()
-    
-    on_distance = is_on_distance(camera, object.position, distance)
-    on_forward = is_on_forward(camera, object)
-    
-    print(f"""\n\n\n
-          Distance = {diff}
-          Forward = {forward.x, forward.y, forward.z}
-          Distance / Forward = {on_distance, on_forward}
-          """)

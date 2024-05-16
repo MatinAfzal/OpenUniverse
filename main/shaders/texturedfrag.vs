@@ -20,7 +20,7 @@ uniform light light_data[NUM_LIGHTS];
 vec4 Create_Light(vec3 light_pos, vec3 light_color, vec3 normal, vec3 fragpos, vec3 view_dir)
 {
     //ambient
-    float a_strength = 0.1;
+    float a_strength = 0.4;
     vec3 ambient = a_strength * light_color;
 
     //diffuse
