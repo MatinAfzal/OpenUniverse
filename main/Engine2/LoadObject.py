@@ -50,6 +50,7 @@ class LoadObject(Mesh):
                          memory_save_chunk=memory_save_chunk,
                          distance_range=distance_range)
 
+
     def load_drawing(self, filename):
         vertices = []
         triangles = []

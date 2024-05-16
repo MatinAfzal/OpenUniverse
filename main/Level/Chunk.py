@@ -12,9 +12,9 @@ class Chunk(Mesh):
             position (pygame.Vector3): chunk center vertex position
             max_height (int): chunk maximum height
             min_depth (int): chunk minimum depth
-            biome (str): chunk biome
         """
-        
+
+        self.level_name = "chunk"
         self.material = material
         self.position = position
         self.shematic = shematic
@@ -32,6 +32,7 @@ class Chunk(Mesh):
         self.right = 8
         self.area = self.left * self.right * self.height
         self.uvs_face = []
+        self.blocks = 0
         
         self.debug = False
         self.test_sample = test_sample[0]
@@ -48,16 +49,11 @@ class Chunk(Mesh):
         self.BD = 0.0000099 # border_deficiency
         self.ONE = 1 - self.BD
             
-        self.vertices, self.triangles , uvs, uvs_ind= self.level_maker(self.position)
+        self.vertices, self.triangles , uvs, uvs_ind, normals, normals_ind = self.level_maker(self.position)
+
         self.vertices = format_vertices(self.vertices, self.triangles)
-        
         self.vertex_uvs = format_vertices(uvs, uvs_ind)
-        
-        # for _ in range(len(self.vertices)):
-        #         self.colors.append(CHUNK_COLOR_R)
-        #         self.colors.append(CHUNK_COLOR_G)
-        #         self.colors.append(CHUNK_COLOR_B)
-        
+        self.normals = format_vertices(normals, normals_ind)
     
     def level_maker(self, center):
         """Chunk level maker
@@ -140,8 +136,21 @@ class Chunk(Mesh):
         level_triangles = []
         level_uvs = []
         level_uvs_ind = []
+
+        normals = [(0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 0.0, 1.0),
+                   (0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (0.0, 1.0, 0.0),
+                   (0.0, 1.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, -1.0),
+                   (0.0, 0.0, -1.0), (0.0, 0.0, -1.0), (0.0, 0.0, -1.0),
+                   (0.0, -1.0, 0.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0),
+                   (0.0, -1.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 0.0),
+                   (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
+                   (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)]
+
+        level_normals = []
+        level_normals_ind = []
         triangle_counter = 0
         uv_counter = 0
+        normal_counter = 0
         dirt = False
         map = {
             "DIRT_X":(2, 3, 1, 2), # HF/HL/LF/LL
@@ -152,6 +161,7 @@ class Chunk(Mesh):
         for ROW in range(0, self.shematic_shape[0]): # Z
             for COLUMN in range(0, self.shematic_shape[1]): # X
                 for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1): # Y
+                    self.blocks += 1
                     
                     if self.debug == True:
                         if COLUMN == self.test_sample_z and ROW == self.test_sample_x:
@@ -207,7 +217,7 @@ class Chunk(Mesh):
                         4 + 8 * triangle_counter, 0 + 8 * triangle_counter, 5 + 8 * triangle_counter, # TRIANGLE 9
                         5 + 8 * triangle_counter, 0 + 8 * triangle_counter, 1 + 8 * triangle_counter, # TRIANGLE 10
                         6 + 8 * triangle_counter, 2 + 8 * triangle_counter, 7 + 8 * triangle_counter, # TRIANGLE 11
-                        7 + 8 * triangle_counter, 2 + 8 * triangle_counter, 3 + 8 * triangle_counter, # TRIANGLE 12
+                        7 + 8 * triangle_counter, 2 + 8 * triangle_counter, 3 + 8 * triangle_counter # TRIANGLE 12
                     ])
                     
                     # UV vertices
@@ -232,14 +242,35 @@ class Chunk(Mesh):
                         0  + 24 * uv_counter, 1  + 24 * uv_counter, 2  + 24 * uv_counter, # TRIANGLE 9
                         2  + 24 * uv_counter, 1  + 24 * uv_counter, 3  + 24 * uv_counter, # TRIANGLE 10
                         12 + 24 * uv_counter, 13 + 24 * uv_counter, 14 + 24 * uv_counter, # TRIANGLE 11
-                        14 + 24 * uv_counter, 13 + 24 * uv_counter, 15 + 24 * uv_counter, # TRIANGLE 12
+                        14 + 24 * uv_counter, 13 + 24 * uv_counter, 15 + 24 * uv_counter # TRIANGLE 12
                     ])
                                 
                     triangle_counter += 1
                     uv_counter += 1
                     dirt = False
-        
-        return level_vertices, level_triangles, level_uvs, level_uvs_ind
+
+                # Normals
+                for i in range(24):
+                    level_normals.append(normals[i])
+
+                level_normals_ind.extend([
+                    0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
+                    2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
+                    4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
+                    6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
+                    8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,
+                    10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,
+                    12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,
+                    14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,
+                    16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,
+                    18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,
+                    20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,
+                    22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter
+                ])
+
+                normal_counter += 1
+
+        return level_vertices, level_triangles, level_uvs, level_uvs_ind, level_normals, level_normals_ind
     
     
     def update_uvs_face(self):

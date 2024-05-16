@@ -1,7 +1,9 @@
 import numpy as np
+from numba import jit
 from Engine2.Mesh import *
 from Engine2.Settings2 import *
 from Engine2.Cullings.ChunkRenderDistance import *
+
 
 class CellAttach:
     """
@@ -9,7 +11,7 @@ class CellAttach:
     - Avoiding draw loops!
     - One line draw (world.draw()) !
     """
-    
+
     def __init__(self, cells: list[object], draw_type=GL_TRIANGLES, shader=None, image=None, chunk=False) -> None:
         print("Attaching Cells...")
         self.image = image
@@ -19,7 +21,8 @@ class CellAttach:
             self.td_cells = np.reshape(cells, newshape=(30, 30))
         
         self.world_formated_vertices = [] # world vertices formated in triangle order
-        self.world_formated_uvs = [] 
+        self.world_formated_uvs = []
+        self.world_formated_normals = []
         self.world_shader = shader
         self.world = None
         self.world_draw_type = draw_type
@@ -29,10 +32,11 @@ class CellAttach:
         self.render_distance = 40 # Chunks
         self.load_map = ChunkRenderDistance(renderdistance=self.render_distance)
         self.load_map.first_load()
-        
+
         if not chunk:
             self.attach_vertices(self.cells)
             self.attach_uvs(self.cells)
+            self.attach_normals(self.cells)
             self.load_world()
         
     
@@ -54,12 +58,25 @@ class CellAttach:
         if len(cells) < 2:
             print("ERROR: NO ENOUGH CELLS TO ATTACH!")
             return 0
-            
+
         self.world_formated_uvs = np.concatenate((cells[0].vertex_uvs, cells[1].vertex_uvs))
         
         for object in cells[2:]:
             if self.load_map.load_map[int(object.position.x)][int(object.position.z)] == 1:
                 self.world_formated_uvs = np.concatenate((self.world_formated_uvs, object.vertex_uvs))
+            else:
+                pass
+
+    def attach_normals(self, cells):
+        if len(cells) < 2:
+            print("ERROR: NO ENOUGH CELLS TO ATTACH!")
+            return 0
+
+        self.world_formated_normals = np.concatenate((cells[0].normals, cells[1].normals))
+
+        for object in cells[2:]:
+            if self.load_map.load_map[int(object.position.x)][int(object.position.z)] == 1:
+                self.world_formated_normals = np.concatenate((self.world_formated_normals, object.normals))
             else:
                 pass
 
@@ -107,10 +124,11 @@ class CellAttach:
             self.colors.append(CHUNK_COLOR_R)
             self.colors.append(CHUNK_COLOR_G)
             self.colors.append(CHUNK_COLOR_B)
-            
+
         self.world = Mesh(vertices=self.world_formated_vertices,
                      imagefile=self.image,
                      material=self.world_shader,
                      draw_type=self.world_draw_type,
                      vertex_colors=self.colors,
-                     vertex_uvs=self.world_formated_uvs)
+                     vertex_uvs=self.world_formated_uvs,
+                     vertex_normals=self.world_formated_normals)

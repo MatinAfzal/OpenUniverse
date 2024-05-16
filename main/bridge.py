@@ -11,12 +11,17 @@ from Level.TreeAttach import *
 from Level.Chunk2 import *
 from pygame import mixer
 from time import sleep
+from datetime import datetime
 
 class MultiShaders(Screen):
     
     def __init__(self):
         print("Starting Engine...")
+        start = datetime.now()
+        print("Starting at:" + str(start.now()))
+
         super().__init__(SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT)
+
         self.plane = None
         self.cube = None
         self.light = None
@@ -24,8 +29,12 @@ class MultiShaders(Screen):
         self.obj_cube = None
         self.img_cube = None
         self.mat = None
-        self.seed = 0
+        self.draw_types = None
+        self.v_counter = None
+        self.c_counter = None
+        self.x_counter = None
 
+        self.seed = 0
 
     def initialise(self):
         # Variables
@@ -58,9 +67,7 @@ class MultiShaders(Screen):
         self.obj_cube = r"models\cube.obj"
         self.obj_donut = r"models\donut.obj"
         self.obj_granny = r"models\granny.obj"
-        
-        # musics
-        self.music_c14 = r"COPY RIGHT!"
+
         
         # Inits
         print("Loading Inits...")
@@ -80,14 +87,19 @@ class MultiShaders(Screen):
         self.camera = Camera(self.screen_width, self.screen_height)
         # self.human = LoadObject(self.obj_granny, imagefile=self.img_grass, draw_type=GL_TRIANGLES, material=self.mat, scale=pygame.Vector3(0.02, 0.02, 0.02), location=pygame.Vector3(26, 5, 41))
         self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=pygame.Vector3(80, 20, 80), scale=pygame.Vector3(8, 8, 8))
-          
         # Object Attachs
         self.terrain = ChunkAttach(number=5)
         self.trees = TreeAttach(number=5)
         
         # Cell Attaches
+        cell_start = datetime.now()
+        print("Cell Attach started at:" + str(cell_start.now()))
+
         self.world = CellAttach(self.terrain.terrain, shader=self.mat, image=self.img_texture, chunk=False)
         self.forest = CellAttach(self.trees.forest, shader=self.mat, image=self.img_texture)
+
+        cell_end = datetime.now()
+        print("Cell Attach ended at:" + str(cell_end.now()))
         
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
@@ -155,10 +167,12 @@ class MultiShaders(Screen):
         self.light.position = pygame.Vector3(self.camera.transformation[0, 3], self.camera.transformation[1, 3], self.camera.transformation[2, 3])
         self.light.update(self.mat.program_id) 
                
-        self.light.position = pygame.Vector3(self.camera.transformation[0, 3]+1000, self.camera.transformation[1, 3], self.camera.transformation[2, 3]+1000)
-        self.light.update(self.mat.program_id)
+        # self.light.position = pygame.Vector3(self.camera.transformation[0, 3]+1000, self.camera.transformation[1, 3], self.camera.transformation[2, 3]+1000)
+        # self.light.update(self.mat.program_id)
         
 if __name__ == "__main__":
     MultiShaders().mainloop()
     print("Mainloop Ends...")
+    end = datetime.now()
+    print("Ended at:" + str(end.now()))
     print("\n\n\n")

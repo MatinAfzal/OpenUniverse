@@ -13,7 +13,8 @@ class Tree(Mesh):
             min_depth (int): tree minimum depth
             biome (str): tree biome
         """
-        
+
+        self.level_name = "tree1"
         self.position = position
         self.max_height = max_height
         self.min_height = min_height
@@ -25,9 +26,10 @@ class Tree(Mesh):
         self.leaf_area = [4, 4]
         self.shematic = shematic
         
-        self.vertices, self.triangles, uvs, uvs_ind = self.level_maker(self.position)
+        self.vertices, self.triangles, uvs, uvs_ind, normals, normals_ind = self.level_maker(self.position)
         self.vertices = format_vertices(self.vertices, self.triangles)
         self.vertex_uvs = format_vertices(uvs, uvs_ind)
+        self.normals = format_vertices(normals, normals_ind)
         
         for _ in range(len(self.vertices)):
                 self.colors.append(1)
@@ -48,14 +50,26 @@ class Tree(Mesh):
             [BLU, BRU] \n
             [BLD, BRD] \n
         """
-        
-        
+
+        normals = [(0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (0.0, 1.0, 0.0),
+                   (0.0, 1.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, -1.0), (0.0, 0.0, -1.0), (0.0, 0.0, -1.0),
+                   (0.0, 0.0, -1.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0),
+                   (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
+                   (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)]
         level_vertices = []
         level_triangles = []
         level_uvs = []
         level_uvs_ind = []
+        level_normals = []
+        level_normals_ind = []
         separator = 0
         uv_counter = 0
+        normal_counter = 0
+        normals = [(0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 0.0, 1.0), (0.0, 1.0, 0.0), (0.0, 1.0, 0.0),
+                   (0.0, 1.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, -1.0), (0.0, 0.0, -1.0), (0.0, 0.0, -1.0),
+                   (0.0, 0.0, -1.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0), (0.0, -1.0, 0.0),
+                   (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
+                   (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)]
         
         # center_y = self.position.y
         center_y = int(self.shematic[3][3]) + 1
@@ -135,6 +149,27 @@ class Tree(Mesh):
             ])
                             
             uv_counter += 1
+
+            # Normals
+            for i in range(24):
+                level_normals.append(normals[i])
+
+            level_normals_ind.extend([
+                0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
+                2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
+                4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
+                6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
+                8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,
+                10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,
+                12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,
+                14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,
+                16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,
+                18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,
+                20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,
+                22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter
+            ])
+
+            normal_counter += 1
         
         # Tree leafs
         # ROWS
@@ -275,4 +310,25 @@ class Tree(Mesh):
                                 
                 uv_counter += 1
 
-        return level_vertices, level_triangles, level_uvs, level_uvs_ind
+                # Normals
+                for i in range(24):
+                    level_normals.append(normals[i])
+
+                level_normals_ind.extend([
+                    0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
+                    2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
+                    4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
+                    6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
+                    8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,
+                    10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,
+                    12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,
+                    14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,
+                    16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,
+                    18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,
+                    20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,
+                    22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter
+                ])
+
+                normal_counter += 1
+
+        return level_vertices, level_triangles, level_uvs, level_uvs_ind, level_normals, level_normals_ind

@@ -1,6 +1,7 @@
 from .Chunk import *
 from pygame import Vector3
 from .Shematic import Shematic
+from numba import jit
 import numpy as np
 
 
@@ -9,7 +10,7 @@ class ChunkAttach:
     Attach chunks togther !
     - Making Trrains !
     """
-    
+
     def __init__(self, startX=0, startY=0, startZ=0, number=4) -> None:
         print("Attaching Chunks...")
         self.terrain = []
@@ -24,8 +25,7 @@ class ChunkAttach:
         self.sample = self.shematic.locate(0, 0)
         
         self.load_terrain()
-          
-          
+
     def load_terrain(self):
         print("Building Chunks (Multiple Level.Chunk Callings)...")
         # self.shematic.graph() # Showing perlin noise 100x100 grid.
