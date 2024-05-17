@@ -1,5 +1,3 @@
-import pygame
-
 from Engine2.Screen import *
 from Engine2.LoadObject import *
 from Engine2.Light import *
@@ -13,6 +11,7 @@ from Level.Chunk2 import *
 from pygame import mixer
 from time import sleep
 from datetime import datetime
+from time import time
 
 class MultiShaders(Screen):
     
@@ -50,6 +49,9 @@ class MultiShaders(Screen):
         
         # Switching World axes status
         self.x_counter = 1
+
+        # Moving sun
+        self.s_counter = 0
         
         # Loads
         print("Loading Files...")
@@ -63,6 +65,7 @@ class MultiShaders(Screen):
         # imgs
         self.img_texture = r"images\texture.png"
         self.img_icu = r"images\ICU.png"
+        self.img_sun = r"images\sun.jpeg"
         
         # objects
         self.obj_cube = r"models\cube.obj"
@@ -83,17 +86,26 @@ class MultiShaders(Screen):
         # Entity
         print("Loading Entitis...")
         self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
-        self.light_pos = pygame.Vector3(20, 30, 20)
+
+        self.light_pos = pygame.Vector3(-30, 60, -30)
+        # self.light2_pos = pygame.Vector3(120, 60, 120)
+
         self.lightbolb_pos = pygame.Vector3(self.light_pos.x, self.light_pos.y + 5, self.light_pos.z)
+        # self.lightbolb2_pos = pygame.Vector3(self.light2_pos.x, self.light2_pos.y + 5, self.light2_pos.z)
+
         self.light = Light(self.light_pos, pygame.Vector3(1, 1, 1), 0)
+        # self.light2 = Light(self.light2_pos, pygame.Vector3(1, 1, 1), 1)
         # self.donut = LoadObject(self.obj_donut, self.img_cube, material=self.mat, location=pygame.Vector3(16, 5, 16))
         self.camera = Camera(self.screen_width, self.screen_height)
         # self.human = LoadObject(self.obj_granny, imagefile=self.img_grass, draw_type=GL_TRIANGLES, material=self.mat, scale=pygame.Vector3(0.02, 0.02, 0.02), location=pygame.Vector3(26, 5, 41))
-        self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+        self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+        # self.cube1 = LoadObject(self.obj_cube, imagefile=self.img_icu, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb2_pos, scale=pygame.Vector3(8, 8, 8))
+
+        self.sun_start = int(time())
 
         # Object Attachs
-        self.terrain = ChunkAttach(number=7)
-        self.trees = TreeAttach(number=7)
+        self.terrain = ChunkAttach(number=10)
+        self.trees = TreeAttach(number=10)
         
         # Cell Attaches
         cell_start = datetime.now()
@@ -108,7 +120,6 @@ class MultiShaders(Screen):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glLight
 
         # light = [self.light_pos.x, self.light_pos.y, self.light_pos.z, 0.0]
         # glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, [0, 0, -1])
@@ -159,6 +170,14 @@ class MultiShaders(Screen):
                 print("World Center axes disabled...")
             
             sleep(0.3)
+
+        if keys[pygame.K_l]:
+            if self.s_counter > 2:
+                self.s_counter = 0
+            else:
+                self.s_counter += 1
+
+            sleep(0.3)
         #####
         
         glPointSize(10)
@@ -169,6 +188,7 @@ class MultiShaders(Screen):
         self.world.world.draw(self.camera, self.light)
         self.forest.world.draw(self.camera, self.light)
         self.cube0.draw(self.camera, self.light)
+        # self.cube1.draw(self.camera, self.light2)
 
         # self.donut.draw(self.camera, self.light)
         # self.human.draw(self.camera, self.light)
@@ -176,9 +196,28 @@ class MultiShaders(Screen):
         # self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
         # self.light.update(self.mat.program_id)
 
-        # self.light.position = pygame.Vector3(-self.light_pos.x, self.light_pos.y, -self.light_pos.z)
-        # self.light.update(self.mat.program_id)
-        
+        sun_end = int(time())
+        sun_current = self.sun_start - sun_end
+
+        if sun_current % 2 == 0 and self.s_counter == 1:
+            self.light_pos.x += 2
+            self.light_pos.z += 2
+            self.lightbolb_pos = self.light_pos
+
+            self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+            self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
+            self.light.update(self.mat.program_id)
+
+        if sun_current % 2 == 0 and self.s_counter == 2:
+            self.light_pos.x -= 2
+            self.light_pos.z -= 2
+            self.lightbolb_pos = self.light_pos
+
+            self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat, location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+            self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
+            self.light.update(self.mat.program_id)
+
+
 if __name__ == "__main__":
     MultiShaders().mainloop()
     print("Mainloop Ends...")

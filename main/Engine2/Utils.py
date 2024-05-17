@@ -52,7 +52,8 @@ def create_program(vertex_shader_code, fragment_shader_code):
     
     glDeleteShader(vertex_shader_id)
     glDeleteShader(fragment_shader_id)
-    
+
+    print("Program Created, program_id: ", str(program_id))
     return program_id
 
 

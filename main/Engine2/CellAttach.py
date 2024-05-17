@@ -130,5 +130,5 @@ class CellAttach:
                      material=self.world_shader,
                      draw_type=self.world_draw_type,
                      vertex_colors=self.colors,
-                     vertex_uvs=self.world_formated_uvs,
-                     vertex_normals=self.world_formated_normals)
+                     vertex_uvs=self.world_formated_uvs)
+                     # vertex_normals=self.world_formated_normals)

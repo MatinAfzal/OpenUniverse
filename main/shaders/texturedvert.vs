@@ -16,7 +16,8 @@ void main()
     view_pos = vec3(inverse(model_mat) *
                     vec4(view_mat[3][0], view_mat[3][1], view_mat[3][2],1));
     gl_Position = projection_mat * inverse(view_mat) * model_mat * vec4(position,1);
-    normal = mat3(transpose(inverse(model_mat))) * vertex_normal;
+    vec3 new_normal = vec3(-vertex_normal.x, 1, -vertex_normal.z);
+    normal = mat3(transpose(inverse(model_mat))) * new_normal;
     fragpos = vec3(model_mat * vec4(position,1));
     color = vertex_color;
     UV = vertex_uv;
