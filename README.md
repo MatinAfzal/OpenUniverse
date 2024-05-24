@@ -14,4 +14,4 @@ Any programmer can use the codes in this project to build his own world or help 
 Developer: [@MatinAfzal](https://github.com/MatinAfzal)
 
 
-![3DICU_Screenshot1](https://github.com/MatinAfzal/3DICU/assets/128434167/8c7d0ead-9b4c-4c09-9abc-561a7dd8a4f6)
+![3DICU_Screenshot1](https://github.com/MatinAfzal/3DICU/assets/128434167/9a1a3d19-8475-4d27-9280-13d635cc2bdd)
