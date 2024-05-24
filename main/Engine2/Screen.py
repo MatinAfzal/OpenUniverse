@@ -1,16 +1,16 @@
 # This file prepares the page with initial processing settings and executes the main loop
-import os
 import datetime
-from OpenGL.GL import *
-from OpenGL.GLU import *
+import os
 from pygame.locals import *
 from .Camera import *
 from .Settings2 import *
 from .Utils import *
 
 
-class Screen():
-    "Sceeen initialization"
+class Screen:
+    """
+    Sceeen initialization
+    """
     def __init__(self, screen_posX, screen_posY, screen_width, screen_height):
         print("Loading Screen...")
         # program window position init
@@ -33,36 +33,34 @@ class Screen():
         self.camera = None
         self.program_id = None
         self.fps_list = []
-    
-    
+
     def engine_fps(self) -> None:
-        "Live fps counter"
+        """
+        Live fps counter
+        """
 
         fps = str(int(self.clock.get_fps()))
         self.fps_list.append(int(fps))
 
         pygame.display.set_caption(f"FPS: {fps} {SCREEN_CAPTION}")
-        
-        
+
     def engine_shutdown(self):
-        "Shots the engine down"
+        """
+        Shots the engine down
+        """
 
         self.stop_time = datetime.datetime.now()
         save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
         self.run = False
 
-
     def initialise(self):
         pass
-    
 
     def display(self):
         pass
 
-
     def camera_init(self):
         pass
-
 
     def mainloop(self):
         run = True

@@ -1,23 +1,26 @@
 import random
-from .Tree import *
+from main.Level.Tree import *
 from pygame import Vector3
-from .Shematic import Shematic
+from main.Level.Shematic import Shematic
+
 
 class TreeAttach:
     """
-    Attach Trees togther !
+    Attach Trees together !
     - Making Forests !
     """
     
-    def __init__(self, startX=0, startY=0, startZ=0, number=4) -> None:
+    def __init__(self, startX=0, startY=0, startZ=0, numberx=1, numberz= 1, shader=None, texture=None) -> None:
         print("Attaching Trees...")
         self.forest = []
+        self.shader = shader
+        self.texture = texture
         self.sx = startX
         self.sy = startY
         self.sz = startZ
-        self.number = number
-        self.end = number * 8
-        self.shematic = Shematic(number)
+        self.end = numberx * 8 + 1
+        self.end = numberz * 8 + 1
+        self.shematic = Shematic(numberx)
         
         random.seed(100)
         self.load_forest()

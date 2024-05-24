@@ -3,6 +3,7 @@ import pygame
 from .Transformations import *
 from .Uniform import *
 
+
 class Light:
     def __init__(self, position=pygame.Vector3(0, 0, 0), color=pygame.Vector3(1, 1, 1), light_number=0):
         print("Loading light...")

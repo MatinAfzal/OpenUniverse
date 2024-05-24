@@ -3,7 +3,7 @@ import numpy as np
 from OpenGL.GL import *
 
 
-class DataHandler():
+class DataHandler:
     def __init__(self, data_type, data):
         self.data_type = data_type
         self.data = data

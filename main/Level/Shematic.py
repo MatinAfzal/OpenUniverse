@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from perlin_noise import PerlinNoise
 
+
 class Shematic:
     def __init__(self, chunks) -> None:
         self.x_max = 8

@@ -1,15 +1,15 @@
 # This file is responsible for creating and updating the world camera
 import pygame
-import numpy as np
 import math
-from OpenGL.GLU import *
 from .Transformations import *
 from .Uniform import *
 from .Settings2 import *
 
 
-class Camera():
-    "World Camera"
+class Camera:
+    """
+    World Camera
+    """
     def __init__(self, width, height) -> None:
         print("Loading Camera...")
         self.transformation = identity_mat()
@@ -17,13 +17,13 @@ class Camera():
         self.mouse_sensitivity_x = CAMERA_MOUSE_SENSITIVITY_X
         self.mouse_sensitivity_y = CAMERA_MOUSE_SENSITIVITY_Y
         self.key_sensitivity = CAMERA_MOVE_SENSITIVITY
-        self.projection_mat = self.perspective_mat(CAMERA_VIEW_ANGLE, width / height, CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE)
+        self.projection_mat = self.perspective_mat(CAMERA_VIEW_ANGLE, width / height,
+                                                   CAMERA_NEAR_PLANE, CAMERA_FAR_PLANE)
         self.projection = Uniform("mat4", self.projection_mat)
         self.screen_width = width
         self.screen_height = height
         self.yaw = 0
         self.pitch = 0
-
 
     def perspective_mat(self, view_angle, aspect_ratio, near_plane, far_plane) -> np.ndarray:
         a = math.radians(view_angle)
@@ -31,16 +31,12 @@ class Camera():
         r = aspect_ratio
         b = (far_plane + near_plane) / (near_plane - far_plane)
         c = far_plane * near_plane / (near_plane - far_plane)
-        return np.array(
-                        [[d/r, 0, 0, 0],
-                        [0, d, 0, 0],
-                        [0, 0, b, c],
-                        [0, 0, -1, 0]]
-                    , np.float32)
-
+        return np.array([[d/r, 0, 0, 0], [0, d, 0, 0], [0, 0, b, c], [0, 0, -1, 0]], np.float32)
 
     def rotate(self, yaw, pitch) -> None:
-        "Camera rotation"
+        """
+        Camera rotation
+        """
         self.yaw = yaw
         self.pitch = pitch
         forward = pygame.Vector3(self.transformation[0, 2], self.transformation[1, 2], self.transformation[2, 2])
@@ -50,7 +46,6 @@ class Camera():
         self.transformation = rotate(self.transformation, yaw, "Y", CAMERA_ROTATE_YAW_LOCAL)
         if (angle < CAMERA_ROTATE_PITCHUP_MAX and pitch > 0) or (angle > CAMERA_ROTATE_PITCHDOWN_MAX and pitch < 0):
             self.transformation = rotate(self.transformation, pitch, "X", CAMERA_ROTATE_PITCH_LOCAL)
-
 
     def update(self, program_id) -> None:
         if pygame.mouse.get_visible():

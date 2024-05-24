@@ -1,12 +1,12 @@
 # This file reads meshes from objs and processes them
-import pygame
-from OpenGL.GL import *
 from .Mesh import *
 from .Utils import *
 
 
 class LoadObject(Mesh):
-    "Reads meshe from obj"
+    """
+    Reads mesh from obj
+    """
     def __init__(self, filename, imagefile, draw_type=GL_TRIANGLES,
                  location=pygame.Vector3(0, 0, 0),
                  rotation=Rotation(0, pygame.Vector3(0, 1, 0)),
@@ -49,7 +49,6 @@ class LoadObject(Mesh):
                          memory_save=memory_save,
                          memory_save_chunk=memory_save_chunk,
                          distance_range=distance_range)
-
 
     def load_drawing(self, filename):
         vertices = []
