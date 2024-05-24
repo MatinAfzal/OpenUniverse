@@ -1,23 +1,22 @@
 from OpenGL.GL import GL_LINES
 
-
-## World settings
+# World settings
 WORLD_COLOR_R = 0.5
 WORLD_COLOR_G = 0.5
 WORLD_COLOR_B = 0.5
 WORLD_COLOR_A = 0.5
 
-## World axes settings
+# World axes settings
 WORLD_AXES_VERTICES = [[-100, 0, 0], [100, 0, 0], [0, -100, 0], [0, 100, 0], [0, 0, -100], [0, 0, 100]]
 WORLD_AXES_COLORS = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]]
 WORLD_AXES_DRAWTYPE = GL_LINES
 
-## Chunk settings
+# Chunk settings
 CHUNK_COLOR_R = 1
 CHUNK_COLOR_G = 1
 CHUNK_COLOR_B = 1
 
-## Camera settings
+# Camera settings
 CAMERA_MOUSE_SENSITIVITY_X = 0.1
 CAMERA_MOUSE_SENSITIVITY_Y = 0.1
 CAMERA_MOVE_SENSITIVITY = 0.31
@@ -29,7 +28,7 @@ CAMERA_ROTATE_PITCH_LOCAL = True
 CAMERA_ROTATE_PITCHUP_MAX = 170.0
 CAMERA_ROTATE_PITCHDOWN_MAX = 30
 
-## Screen settings
+# Screen settings
 # SCREEN_POS_X = 850
 # SCREEN_POS_Y = 200
 SCREEN_POS_X = 100

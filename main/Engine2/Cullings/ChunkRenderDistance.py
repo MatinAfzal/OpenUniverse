@@ -3,7 +3,7 @@ import numpy as np
 class ChunkRenderDistance:
     def __init__(self, renderdistance=1) -> None:
         self.render_distance = renderdistance # Chunks
-        self.maximum_distance = 500 # Zog is better i think :/
+        self.maximum_distance = 500
         self.block_distance = self.render_distance * 8 # Blocks
         
         self.load_map = None
@@ -25,8 +25,6 @@ class ChunkRenderDistance:
         self.load_map[self.player_location[0]:self.player_location[0]+self.block_distance, self.player_location[1]-self.block_distance:self.player_location[1]] = 1 # BL
         self.load_map[self.player_location[0]-self.block_distance:self.player_location[0], self.player_location[1]:self.player_location[1]+self.block_distance] = 1 # TR
 
-
-    
     def init_map(self):
         self.load_map = np.zeros(shape=(self.maximum_distance, self.maximum_distance), dtype=np.uint8)
       

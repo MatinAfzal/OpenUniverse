@@ -1,13 +1,13 @@
-import pygame
 from .DataHandler import *
 from .Uniform import *
 from .Transformations import *
 from .Texture import *
-from .Cullings.ChunkRenderDistance import *
 
 
-class Mesh():
-    "Mesh Loader"
+class Mesh:
+    """
+    Mesh Loader
+    """
     def __init__(self, vertices,
                  imagefile=None,
                  vertex_normals=None,
@@ -40,9 +40,6 @@ class Mesh():
         self.vao_ref = glGenVertexArrays(1)
         glBindVertexArray(self.vao_ref)
         
-        self.load_map = ChunkRenderDistance(renderdistance=3)
-        
-        
         # Construction of mesh sections if there are any
         if vertices is not None:
             position = DataHandler("vec3", self.vertices)
@@ -52,7 +49,6 @@ class Mesh():
             colors = DataHandler("vec3", vertex_colors)
             colors.create_variable(self.material.program_id, "vertex_color")
 
-            
         if vertex_normals is not None:
             v_normals = DataHandler("vec3", vertex_normals)
             v_normals.create_variable(self.material.program_id, "vertex_normal")
@@ -76,7 +72,6 @@ class Mesh():
             self.image = Texture(imagefile)
             self.texture = Uniform("sampler2D", [self.image.texture_id, 1])
 
-
     def draw_force(self, camera, light, draw_type_force=None):
         self.material.use()
         camera.update(self.material.program_id)
@@ -89,21 +84,21 @@ class Mesh():
         self.transformation_mat = rotateA(self.transformation_mat, self.move_rotation.angle, self.move_rotation.axis)
         self.transformation_mat = translate(self.transformation_mat,
                                             self.move_translate.x, self.move_translate.y, self.move_translate.z)
-        self.transformation_mat = scale3(self.transformation_mat,
-                                        self.move_scale.x, self.move_scale.y, self.move_scale.z)
+        self.transformation_mat = scale3(
+            self.transformation_mat, self.move_scale.x, self.move_scale.y, self.move_scale.z)
         self.transformation = Uniform("mat4", self.transformation_mat)
         self.transformation.find_variable(self.material.program_id, "model_mat")
         self.transformation.load()
 
-        
         glBindVertexArray(self.vao_ref)
         
         if draw_type_force:
             glDrawArrays(draw_type_force, 0, len(self.vertices))
         glDrawArrays(self.draw_type, 0, len(self.vertices))
-        
-        
+
     def draw(self, camera, light):
-        "Drawing mesh"
+        """
+        Drawing mesh
+        """
 
         self.draw_force(camera, light)

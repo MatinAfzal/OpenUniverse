@@ -1,5 +1,4 @@
 # This file contains the functions required by the engine
-import os
 import psutil
 import GPUtil
 import platform as pl
@@ -17,7 +16,9 @@ def format_vertices(coordinates, triangles) -> np.ndarray:
 
 
 def compile_shader(shader_type, shader_source):
-    "Shader compiler"
+    """
+    Shader compiler
+    """
     print("Compile Program...")
     shader_id = glCreateShader(shader_type)
     glShaderSource(shader_id, shader_source)
@@ -35,7 +36,9 @@ def compile_shader(shader_type, shader_source):
 
 
 def create_program(vertex_shader_code, fragment_shader_code):
-    "Program handler (& Compile)"
+    """
+    Program handler (& Compile)
+    """
     
     vertex_shader_id = compile_shader(GL_VERTEX_SHADER, vertex_shader_code)
     fragment_shader_id = compile_shader(GL_FRAGMENT_SHADER, fragment_shader_code)
@@ -86,7 +89,7 @@ def save_report(fps_list, start_time, end_time, time_based=False):
     / MIN: {fps_min} | MAX: {fps_max} | AVE: {fps_ave}
     
     $ CPU $
-    / CPU: {processor} | TOTAL CORES: {total_cores} | PYSICAL CORES: {pysical_cores}
+    / CPU: {processor} | TOTAL CORES: {total_cores} | PHYSICAL CORES: {pysical_cores}
     / INDEX - PERCENT
     /USAGE: {cpu_usage}
     
@@ -98,11 +101,11 @@ def save_report(fps_list, start_time, end_time, time_based=False):
     """
 
     if time_based:
-        # Time based report saving
+        # Time based Report saving
         
         try:
             dt_string = start_time.strftime("%d.%m.%Y--%H.%M.%S")
-            with open(f"report\{dt_string}.txt", "w") as report_file:
+            with open(f"Report\{dt_string}.txt", "w") as report_file:
                 report_file.write(report)
         except:
             return 0
@@ -111,19 +114,21 @@ def save_report(fps_list, start_time, end_time, time_based=False):
             return 1
 
     try:
-        with open(f"report\engine_report.txt", "w") as report_file:
+        with open(f"Report\engine_report.txt", "w") as report_file:
             report_file.write(report)
     except:
         return 0
     else:
         return 1
 
+
 def cpinfo():
     c_use = []
     for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
         c_use.append((i, percentage))
     return c_use
-        
+
+
 def gpinfo():
     gpus = GPUtil.getGPUs()
     for gpu in gpus:

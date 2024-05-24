@@ -1,6 +1,7 @@
 import pygame
 from OpenGL.GL import *
 
+
 class Texture():
     def __init__(self, filename=None):
         print("Loading Textures...")
