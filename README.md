@@ -7,6 +7,8 @@
 
 <h3 align="center">An open source implementation of 3D Computer Universe</h3>
 
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FMatinAfzal%2F3DICU&count_bg=%2379C83D&title_bg=%23555555&icon=docusign.svg&icon_color=%23E7E7E7&title=Views&edge_flat=false)](https://hits.seeyoufarm.com)
+
 I started programming a computer universe based on voxels in February 2024 and I am trying to make it more complete.   
 This project has a custom built-in 3D rendering engine written using OpenGL
 Any programmer can use the codes in this project to build his own world or help improve ICU.
