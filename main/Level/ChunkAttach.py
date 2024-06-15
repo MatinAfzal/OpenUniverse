@@ -1,7 +1,7 @@
 from pygame import Vector3
 from main.Level.Chunk import *
 from main.Level.Shematic import Shematic
-
+from main.Engine2.Settings2 import *
 
 class ChunkAttach:
     """
@@ -10,7 +10,8 @@ class ChunkAttach:
     """
 
     def __init__(self, startX=0, startY=0, startZ=0, numberx=1, numberz=1, shader=None, texture=None) -> None:
-        print("Attaching Chunks...")
+        if ESP:
+            print("Attaching Chunks...")
         self.terrain = []
         self.shader = shader
         self.texture = texture
@@ -25,7 +26,9 @@ class ChunkAttach:
         self.load_terrain()
 
     def load_terrain(self):
-        print("Building Chunks (Multiple Level.Chunk Callings)...")
+        if ESP:
+            print("Building Chunks (Multiple Level.Chunk Callings)...")
         for x in range(self.sx, self.endx, 8):
             for z in range(self.sz, self.endz, 8):
-                self.terrain.append(Chunk(Vector3(x, 0, z), shematic=self.shematic.locate(x, z)))
+                self.terrain.append(Chunk(Vector3(x, 0, z), shematic=self.shematic.locate(x, z), material=self.shader,
+                                          img=self.texture))

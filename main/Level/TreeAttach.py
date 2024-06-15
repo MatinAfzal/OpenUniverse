@@ -2,7 +2,7 @@ import random
 from main.Level.Tree import *
 from pygame import Vector3
 from main.Level.Shematic import Shematic
-
+from main.Engine2.Settings2 import *
 
 class TreeAttach:
     """
@@ -11,7 +11,8 @@ class TreeAttach:
     """
     
     def __init__(self, startX=0, startY=0, startZ=0, numberx=1, numberz= 1, shader=None, texture=None) -> None:
-        print("Attaching Trees...")
+        if ESP:
+            print("Attaching Trees...")
         self.forest = []
         self.shader = shader
         self.texture = texture
@@ -27,7 +28,8 @@ class TreeAttach:
         
     
     def load_forest(self):
-        print("Building Trees (Multiple Level.Trees Callings)...")
+        if ESP:
+            print("Building Trees (Multiple Level.Trees Callings)...")
         for x in range(self.sx, self.end, 8):
             for z in range(self.sz, self.end, 8):
                 y = int(self.shematic.locate(x, z)[3][3])

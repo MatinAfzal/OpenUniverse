@@ -1,7 +1,10 @@
+import threading
 from main.Engine2.Utils import format_vertices
+from main.Engine2.Mesh import Mesh
+from main.Engine2.Settings2 import *
 
 
-class Chunk:
+class Chunk(Mesh):
     def __init__(self, position=None, max_height=10, min_depth=-10, shematic=None, img=None, material=None) -> None:
         """
         Chunk generator
@@ -10,8 +13,12 @@ class Chunk:
             position (pygame.Vector3): chunk center vertex position
             max_height (int): chunk maximum height
             min_depth (int): chunk minimum depth
+            shematic (np.array): chunk generation sample
+            img (path): texture
+            material (): if material -> for loop gen
         """
 
+        self.chunk_center = position  # for distance culling
         self.level_name = "chunk"
         self.material = material
         self.texture = img
@@ -45,10 +52,37 @@ class Chunk:
             
         self.vertices, self.triangles, uvs, uvs_ind, normals, normals_ind = self.level_maker(self.position)
 
+        # t1 = threading.Thread(target=format_vertices, args=(self.vertices, self.triangles))
+        # t2 = threading.Thread(target=format_vertices, args=(uvs, uvs_ind))
+        # t3 = threading.Thread(target=format_vertices, args=(normals, normals_ind))
+        #
+        # t1.start()
+        # t2.start()
+        # t3.start()
+        #
+        # self.vertices = t1.join()
+        # self.vertex_uvs = t2.join()
+        # self.normals = t3.join()
+
         self.vertices = format_vertices(self.vertices, self.triangles)
         self.vertex_uvs = format_vertices(uvs, uvs_ind)
         self.normals = format_vertices(normals, normals_ind)
-    
+
+        if self.material:
+            for _ in range(len(self.vertices * 3)):
+                self.colors.append(CHUNK_COLOR_R)
+                self.colors.append(CHUNK_COLOR_G)
+                self.colors.append(CHUNK_COLOR_B)
+
+            super().__init__(
+                vertices=self.vertices,
+                imagefile=self.texture,
+                vertex_normals=self.normals,
+                vertex_uvs=self.vertex_uvs,
+                vertex_colors=self.colors,
+                material=self.material
+            )
+
     def level_maker(self, center):
         """
         Chunk level maker
@@ -152,10 +186,14 @@ class Chunk:
             "DIRT_Z": (2, 3, 1, 2),
             "DIRT_Y": (2, 3, 0, 1)
         }
-            
+
+        # for rendering full chunk use [for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1):  # Y]
+        # for rendering only surface + 2 blocks deep use [temp = int(self.shematic[COLUMN][ROW]) + 1
+        #   for DEPTH in range(temp-2, temp):  # Y]
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
-                for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1):  # Y
+                temp = int(self.shematic[COLUMN][ROW]) + 1
+                for DEPTH in range(temp-2, temp):  # Y
                     self.blocks += 1
                         
                     if DEPTH <= -5:  # SAND

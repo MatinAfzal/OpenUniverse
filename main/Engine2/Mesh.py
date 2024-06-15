@@ -2,6 +2,7 @@ from .DataHandler import *
 from .Uniform import *
 from .Transformations import *
 from .Texture import *
+from .Settings2 import *
 
 
 class Mesh:
@@ -25,7 +26,8 @@ class Mesh:
                  memory_save_chunk=False,
                  distance_range=12
                  ):
-        print("Building Mesh...")
+        if ESP:
+            print("Building Mesh...")
         
         self.position = translation
         self.material= material

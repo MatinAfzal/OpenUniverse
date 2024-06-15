@@ -12,7 +12,8 @@ class Screen:
     Sceeen initialization
     """
     def __init__(self, screen_posX, screen_posY, screen_width, screen_height):
-        print("Loading Screen...")
+        if ESP:
+            print("Loading Screen...")
         # program window position init
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (screen_posX, screen_posY)
         self.screen_width = screen_width
@@ -50,7 +51,8 @@ class Screen:
         """
 
         self.stop_time = datetime.datetime.now()
-        save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
+        if ENGINE_REPORT_SAVE:
+            save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
         self.run = False
 
     def initialise(self):

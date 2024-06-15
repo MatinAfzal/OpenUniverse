@@ -8,7 +8,8 @@ class Axes(Mesh):
     World mesh axes x, y, z
     """
     def __init__(self, location, material) -> None:
-        print("Loading Axes...")
+        if ESP:
+            print("Loading Axes...")
         vertices = WORLD_AXES_VERTICES
         colors = WORLD_AXES_COLORS
         draw_type = WORLD_AXES_DRAWTYPE

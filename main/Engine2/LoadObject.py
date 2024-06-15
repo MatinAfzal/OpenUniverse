@@ -1,6 +1,7 @@
 # This file reads meshes from objs and processes them
 from .Mesh import *
 from .Utils import *
+from .Settings2 import *
 
 
 class LoadObject(Mesh):
@@ -19,7 +20,8 @@ class LoadObject(Mesh):
                  memory_save_chunk=False,
                  distance_range=12
                  ):
-        print("Loading Objects...")
+        if ESP:
+            print("Loading Objects...")
         
         # Mesh sections
         coordinates, triangles, uvs, uvs_ind, normals, normal_ind = self.load_drawing(filename)

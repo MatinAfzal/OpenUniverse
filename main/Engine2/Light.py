@@ -2,11 +2,13 @@
 import pygame
 from .Transformations import *
 from .Uniform import *
+from .Settings2 import *
 
 
 class Light:
     def __init__(self, position=pygame.Vector3(0, 0, 0), color=pygame.Vector3(1, 1, 1), light_number=0):
-        print("Loading light...")
+        if ESP:
+            print("Loading light...")
         self.transformation = identity_mat()
         self.position = position
         self.color = color

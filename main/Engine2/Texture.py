@@ -1,10 +1,11 @@
 import pygame
 from OpenGL.GL import *
-
+from .Settings2 import *
 
 class Texture():
     def __init__(self, filename=None):
-        print("Loading Textures...")
+        if ESP:
+            print("Loading Textures...")
         self.surface = None
         self.texture_id = glGenTextures(1)
         if filename is not None:
