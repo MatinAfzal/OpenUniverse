@@ -1,6 +1,8 @@
 # This file prepares the page with initial processing settings and executes the main loop
 import datetime
 import os
+
+import pygame
 from pygame.locals import *
 from .Camera import *
 from .Settings2 import *
@@ -28,7 +30,7 @@ class Screen:
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 24) # GPU DEPTH BUFFER SIZE
         
-        self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL)
+        self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL, pygame.FULLSCREEN)
         pygame.display.set_caption(SCREEN_CAPTION_LOADING)
         self.clock = pygame.time.Clock()
         self.camera = None

@@ -1,6 +1,6 @@
 import threading
-from main.Engine2.Mesh import *
-from main.Engine2.Settings2 import *
+from .Mesh import *
+from .Settings2 import *
 
 
 class CellAttach:
@@ -13,6 +13,8 @@ class CellAttach:
     def __init__(self, cells: list[object], draw_type=GL_TRIANGLES, shader=None, image=None) -> None:
         if ESP:
             print("Attaching Cells...")
+
+        self.level_name = cells[0].level_name
         self.image = image
         self.cells = cells
         
@@ -81,12 +83,23 @@ class CellAttach:
             self.colors.append(CHUNK_COLOR_G)
             self.colors.append(CHUNK_COLOR_B)
 
-        self.world = Mesh(
-            vertices=self.world_formatted_vertices,
-            imagefile=self.image,
-            material=self.world_shader,
-            draw_type=self.world_draw_type,
-            vertex_colors=self.colors,
-            vertex_uvs=self.world_formatted_uvs,
-            vertex_normals=self.world_formatted_normals
-        )
+        if self.level_name == "tree1":
+            self.world = Mesh(
+                vertices=self.world_formatted_vertices,
+                imagefile=self.image,
+                material=self.world_shader,
+                draw_type=self.world_draw_type,
+                vertex_colors=self.colors,
+                vertex_uvs=self.world_formatted_uvs,
+                vertex_normals=self.world_formatted_normals
+            )
+        else:
+            self.world = Mesh(
+                vertices=self.world_formatted_vertices,
+                imagefile=self.image,
+                material=self.world_shader,
+                draw_type=self.world_draw_type,
+                vertex_colors=self.colors,
+                vertex_uvs=self.world_formatted_uvs,
+                vertex_normals=self.world_formatted_normals
+            )

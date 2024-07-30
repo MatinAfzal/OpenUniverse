@@ -1,7 +1,7 @@
 import threading
-from main.Engine2.Utils import format_vertices
-from main.Engine2.Mesh import Mesh
-from main.Engine2.Settings2 import *
+from Engine2.Utils import format_vertices
+from Engine2.Mesh import Mesh
+from Engine2.Settings2 import *
 
 
 class Chunk(Mesh):
@@ -193,7 +193,7 @@ class Chunk(Mesh):
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
                 temp = int(self.shematic[COLUMN][ROW]) + 1
-                for DEPTH in range(temp-2, temp):  # Y
+                for DEPTH in range(temp-4, temp):  # Y
                     self.blocks += 1
                         
                     if DEPTH <= -5:  # SAND
@@ -201,22 +201,34 @@ class Chunk(Mesh):
                         self.HM_L = 1
                         self.VM_F = 2
                         self.VM_L = 3
+                        # self.HM_F = 15
+                        # self.HM_L = 16
+                        # self.VM_F = 15
+                        # self.VM_L = 16
                     elif -4 <= DEPTH < 0:  # DIRT
                         # dirt = True
                         self.HM_F = 0
                         self.HM_L = 1
                         self.VM_F = 1
                         self.VM_L = 2
+                        # self.HM_F = 15
+                        # self.HM_L = 16
+                        # self.VM_F = 15
+                        # self.VM_L = 16
                     elif 0 <= DEPTH < 15:  # GRASS
                         self.HM_F = 9
                         self.HM_L = 10
                         self.VM_F = 15
                         self.VM_L = 16
+                        # self.HM_F = 1
+                        # self.HM_L = 2
+                        # self.VM_F = 14
+                        # self.VM_L = 15
                     elif DEPTH >= 15:  # SNOW
-                        self.HM_F = 15
-                        self.HM_L = 16
-                        self.VM_F = 15
-                        self.VM_L = 16
+                        self.HM_F = 1
+                        self.HM_L = 2
+                        self.VM_F = 14
+                        self.VM_L = 15
                     else:
                         print(f"ERROR: Unidentified block detected... ZXY:{ROW}/{COLUMN}/{DEPTH}")
                         

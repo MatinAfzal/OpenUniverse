@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 from math import sqrt
-from main.Engine2.Settings2 import *
+from Engine2.Settings2 import *
 
 
 class DistanceCulling:
