@@ -1,5 +1,6 @@
-from main.Engine2.Mesh import *
-from main.Engine2.Settings2 import *
+import threading
+from .Mesh import *
+from .Settings2 import *
 
 
 class CellAttach:
@@ -10,7 +11,10 @@ class CellAttach:
     """
 
     def __init__(self, cells: list[object], draw_type=GL_TRIANGLES, shader=None, image=None) -> None:
-        print("Attaching Cells...")
+        if ESP:
+            print("Attaching Cells...")
+
+        self.level_name = cells[0].level_name
         self.image = image
         self.cells = cells
         
@@ -23,12 +27,25 @@ class CellAttach:
         self.colors = []
         self.call_time = 0
 
-        self.attach_vertices(self.cells)
-        self.attach_uvs(self.cells)
-        self.attach_normals(self.cells)
+        t1 = threading.Thread(target=self.attach_vertices)
+        t2 = threading.Thread(target=self.attach_uvs)
+        t3 = threading.Thread(target=self.attach_normals)
+
+        t1.start()
+        t2.start()
+        t3.start()
+
+        t1.join()
+        t2.join()
+        t3.join()
+
+        # self.attach_vertices(self.cells)
+        # self.attach_uvs(self.cells)
+        # self.attach_normals(self.cells)
         self.load_world()
 
-    def attach_vertices(self, cells):
+    def attach_vertices(self):
+        cells = self.cells
         if len(cells) < 2:
             print("\n\nERROR: NO ENOUGH CELLS TO ATTACH!\n\n")
             return 0
@@ -38,7 +55,8 @@ class CellAttach:
         for instance in cells[2:]:
             self.world_formatted_vertices = np.concatenate((self.world_formatted_vertices, instance.vertices))
 
-    def attach_uvs(self, cells):
+    def attach_uvs(self):
+        cells = self.cells
         if len(cells) < 2:
             print("ERROR: NO ENOUGH CELLS TO ATTACH!")
             return 0
@@ -48,7 +66,8 @@ class CellAttach:
         for instance in cells[2:]:
             self.world_formatted_uvs = np.concatenate((self.world_formatted_uvs, instance.vertex_uvs))
 
-    def attach_normals(self, cells):
+    def attach_normals(self):
+        cells = self.cells
         if len(cells) < 2:
             print("ERROR: NO ENOUGH CELLS TO ATTACH!")
             return 0
@@ -64,12 +83,23 @@ class CellAttach:
             self.colors.append(CHUNK_COLOR_G)
             self.colors.append(CHUNK_COLOR_B)
 
-        self.world = Mesh(
-            vertices=self.world_formatted_vertices,
-            imagefile=self.image,
-            material=self.world_shader,
-            draw_type=self.world_draw_type,
-            vertex_colors=self.colors,
-            vertex_uvs=self.world_formatted_uvs,
-            vertex_normals=self.world_formatted_normals
-        )
+        if self.level_name == "tree1":
+            self.world = Mesh(
+                vertices=self.world_formatted_vertices,
+                imagefile=self.image,
+                material=self.world_shader,
+                draw_type=self.world_draw_type,
+                vertex_colors=self.colors,
+                vertex_uvs=self.world_formatted_uvs,
+                vertex_normals=self.world_formatted_normals
+            )
+        else:
+            self.world = Mesh(
+                vertices=self.world_formatted_vertices,
+                imagefile=self.image,
+                material=self.world_shader,
+                draw_type=self.world_draw_type,
+                vertex_colors=self.colors,
+                vertex_uvs=self.world_formatted_uvs,
+                vertex_normals=self.world_formatted_normals
+            )

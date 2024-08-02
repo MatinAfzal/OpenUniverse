@@ -1,12 +1,12 @@
-from main.Engine2.Screen import *
-from main.Engine2.LoadObject import *
-from main.Engine2.Light import *
-from main.Engine2.Material import *
-from main.Engine2.Axes import *
-from main.Engine2.CellAttach import *
-from main.Engine2.Settings2 import *
-from main.Level.ChunkAttach import *
-from main.Level.TreeAttach import *
+from Engine2.Screen import *
+from Engine2.LoadObject import *
+from Engine2.Light import *
+from Engine2.Material import *
+from Engine2.Axes import *
+from Engine2.CellAttach import *
+from Level.ObjectAttach import *
+from Engine2.Cullings.DistanceCulling import *
+from Level.Shematic import *
 from time import sleep
 from datetime import datetime
 from time import time
@@ -15,7 +15,10 @@ from time import time
 class MultiShaders(Screen):
     
     def __init__(self):
-        print("Starting Engine...")
+        if ESP:
+            print("Starting Engine...")
+        print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
+
         start = datetime.now()
         print("Starting at:" + str(start.now()))
 
@@ -29,6 +32,10 @@ class MultiShaders(Screen):
         self.img_cube = None
         self.mat = None
         self.seed = 0
+
+        # Class init
+        self.culling_distance = DistanceCulling(distance=DCD)
+        self.shematic = Shematic(1)
 
         # Switching draw types
         self.draw_types = [GL_POINTS, GL_LINES, GL_TRIANGLES]
@@ -47,9 +54,11 @@ class MultiShaders(Screen):
         self.img_texture = r"Textures\texture.png"
         self.img_icu = r"Textures\ICU.png"
         self.img_sun = r"Textures\sun.jpeg"
+        self.img_cactus = r"Textures\cactus.png"
 
         # Loads
-        print("Loading Files...")
+        if ESP:
+            print("Loading Files...")
 
         # objects
         self.obj_cube = r"Models\cube.obj"
@@ -62,12 +71,14 @@ class MultiShaders(Screen):
         vertexcolfrag = r"Shaders/vertexcolfrag.vs"
 
         # Shaders
-        print("Loading Shaders...")
+        if ESP:
+            print("Loading Shaders...")
         self.mat = Material(texturevert, texturefrag)
         axesmat = Material(vertexcolvert, vertexcolfrag)
 
         # Entity
-        print("Loading Entitis...")
+        if ESP:
+            print("Loading Entitis...")
         self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
 
         self.light_pos = pygame.Vector3(-30, 60, -30)
@@ -80,22 +91,29 @@ class MultiShaders(Screen):
         self.sun_start = int(time())
 
         # Object Attach
-        self.terrain = ChunkAttach(numberx=5, numberz=5)
-        self.trees = TreeAttach(numberx=5, numberz=5)
+        self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=15, number_z=15)
+        self.trees = ObjectAttach(object_name="tree", number_x=15, number_z=15)
+
+        # self.terrain = ObjectAttach(object_name="chunk", object_type="desert", number_x=10, number_z=10)
+        # self.trees = ObjectAttach(object_name="cactus", number_x=10, number_z=10)
 
         # Cell Attaches
         cell_start = datetime.now()
-        print("Cell Attach started at:" + str(cell_start.now()))
+        if ESP:
+            print("Cell Attach started at:" + str(cell_start.now()))
 
-        self.world = CellAttach(self.terrain.terrain, shader=self.mat, image=self.img_texture)
-        self.forest = CellAttach(self.trees.forest, shader=self.mat, image=self.img_texture)
+        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
 
     def initialise(self):
         # Variables
-        print("Loading Variables...")
+        if ESP:
+            print("Loading Variables...")
 
         cell_end = datetime.now()
-        print("Cell Attach ended at:" + str(cell_end.now()))
+        if ESP:
+            print("Cell Attach ended at:" + str(cell_end.now()))
         
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
@@ -106,7 +124,8 @@ class MultiShaders(Screen):
     
     def display(self):
         # glClearColor(0.5, 0.5 ,0.5, 0.5) # Middle gray
-        glClearColor(0.58, 0.85 ,0.94, 0.5) # Sky blue
+        glClearColor(0.58, 0.85, 0.94, 0.5)  # Sky blue
+        # glClearColor(0, 0 ,0, 0.5) # Sky night
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         
         #####
@@ -116,7 +135,8 @@ class MultiShaders(Screen):
                 self.v_counter = 0
             self.world.world_draw_type = self.draw_types[self.v_counter]
             self.forest.world_draw_type = self.draw_types[self.v_counter]
-            print("Draw Type switched...")
+            if ESP:
+                print("Draw Type switched...")
             self.world.load_world()
             self.forest.load_world()
             self.v_counter += 1
@@ -127,10 +147,13 @@ class MultiShaders(Screen):
                 self.c_counter = 0
             
             if self.c_counter == 0:
-                print("Cull Face enabled...")
+                if ESP:
+                    print("Cull Face enabled...")
                 glEnable(GL_CULL_FACE)
+
             else:
-                print("Cull Face disabled...")
+                if ESP:
+                    print("Cull Face disabled...")
                 glDisable(GL_CULL_FACE)
             
             self.c_counter += 1
@@ -142,9 +165,11 @@ class MultiShaders(Screen):
                 self.x_counter = 0
                 
             if self.x_counter == 0:
-                print("World Center axes enabled...")
+                if ESP:
+                    print("World Center axes enabled...")
             else:
-                print("World Center axes disabled...")
+                if ESP:
+                    print("World Center axes disabled...")
             
             sleep(0.3)
 
@@ -156,11 +181,10 @@ class MultiShaders(Screen):
 
             sleep(0.3)
         #####
-        
         glPointSize(10)
         if self.x_counter == 0:
             self.axes.draw(self.camera, self.light)
-        
+
         self.world.world.draw(self.camera, self.light)
         self.forest.world.draw(self.camera, self.light)
         self.cube0.draw(self.camera, self.light)
@@ -189,7 +213,8 @@ class MultiShaders(Screen):
 
 if __name__ == "__main__":
     MultiShaders().mainloop()
-    print("Mainloop Ends...")
+    if ESP:
+        print("Mainloop Ends...")
     end = datetime.now()
     print("Ended at:" + str(end.now()))
     print("\n\n\n")

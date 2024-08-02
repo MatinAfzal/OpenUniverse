@@ -4,9 +4,7 @@ from math import *
 
 
 class Rotation:
-    """"
-    Rotation angle & axis
-    """
+    "Rotation angle & axis"
     def __init__(self, angle, axis):
         self.angle = angle
         self.axis = axis
@@ -95,7 +93,7 @@ def scale3(matrix, x, y, z):
     return matrix @ sc
 
 
-def rotate(matrix, angle, axis, local=True):
+def rotate(matrix, angle, axis, local = True):
     rot = identity_mat()
     if axis == "X":
         rot = rotate_x_mat(angle)
@@ -109,7 +107,7 @@ def rotate(matrix, angle, axis, local=True):
         return rot @ matrix
 
 
-def rotateA(matrix, angle, axis, local=True):
+def rotateA(matrix, angle, axis, local = True):
     rot = rotate_axis(angle, axis)
     if local:
         return matrix @ rot

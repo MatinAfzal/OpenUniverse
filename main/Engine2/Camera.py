@@ -11,7 +11,8 @@ class Camera:
     World Camera
     """
     def __init__(self, width, height) -> None:
-        print("Loading Camera...")
+        if ESP:
+            print("Loading Camera...")
         self.transformation = identity_mat()
         self.last_mouse = pygame.math.Vector2(0, 0)
         self.mouse_sensitivity_x = CAMERA_MOUSE_SENSITIVITY_X

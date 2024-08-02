@@ -4,6 +4,7 @@ import GPUtil
 import platform as pl
 import numpy as np
 from OpenGL.GL import *
+from .Settings2 import *
 
 
 def format_vertices(coordinates, triangles) -> np.ndarray:
@@ -19,7 +20,8 @@ def compile_shader(shader_type, shader_source):
     """
     Shader compiler
     """
-    print("Compile Program...")
+    if ESP:
+        print("Compile Program...")
     shader_id = glCreateShader(shader_type)
     glShaderSource(shader_id, shader_source)
     glCompileShader(shader_id)
@@ -56,12 +58,14 @@ def create_program(vertex_shader_code, fragment_shader_code):
     glDeleteShader(vertex_shader_id)
     glDeleteShader(fragment_shader_id)
 
-    print("Program Created, program_id: ", str(program_id))
+    if ESP:
+        print("Program Created, program_id: ", str(program_id))
     return program_id
 
 
 def save_report(fps_list, start_time, end_time, time_based=False):
-    print("Saving Report...")
+    if ESP:
+        print("Saving Report...")
     uname = pl.uname()
     fps_min = min(fps_list)
     fps_max = max(fps_list)

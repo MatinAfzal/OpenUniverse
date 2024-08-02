@@ -1,6 +1,8 @@
 # This file prepares the page with initial processing settings and executes the main loop
 import datetime
 import os
+
+import pygame
 from pygame.locals import *
 from .Camera import *
 from .Settings2 import *
@@ -12,7 +14,8 @@ class Screen:
     Sceeen initialization
     """
     def __init__(self, screen_posX, screen_posY, screen_width, screen_height):
-        print("Loading Screen...")
+        if ESP:
+            print("Loading Screen...")
         # program window position init
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (screen_posX, screen_posY)
         self.screen_width = screen_width
@@ -27,7 +30,7 @@ class Screen:
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 24) # GPU DEPTH BUFFER SIZE
         
-        self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL)
+        self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL, pygame.FULLSCREEN)
         pygame.display.set_caption(SCREEN_CAPTION_LOADING)
         self.clock = pygame.time.Clock()
         self.camera = None
@@ -50,7 +53,8 @@ class Screen:
         """
 
         self.stop_time = datetime.datetime.now()
-        save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
+        if ENGINE_REPORT_SAVE:
+            save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
         self.run = False
 
     def initialise(self):

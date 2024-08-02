@@ -1,17 +1,27 @@
-from main.Engine2.Utils import format_vertices
+import threading
+from Engine2.Utils import format_vertices
+from Engine2.Mesh import Mesh
+from Engine2.Settings2 import *
 
 
-class Chunk:
-    def __init__(self, position=None, max_height=10, min_depth=-10, shematic=None, img=None, material=None) -> None:
+class Chunk(Mesh):
+    def __init__(self, biome="jungle", position=None, max_height=10, min_depth=-10, shematic=None, img=None, material=None) -> None:
         """
         Chunk generator
 
         Args:
+            biome (str): chunk type ["jungle", "desert", "snow"]
             position (pygame.Vector3): chunk center vertex position
             max_height (int): chunk maximum height
             min_depth (int): chunk minimum depth
+            shematic (np.array): chunk generation sample
+            img (path): texture
+            material (): if material -> for loop gen
         """
 
+        self.known_biomes = ["jungle", "desert", "snow"]
+        self.biome = biome
+        self.chunk_center = position  # for distance culling
         self.level_name = "chunk"
         self.material = material
         self.texture = img
@@ -42,13 +52,44 @@ class Chunk:
         self.VM_L = 1  # Vertical Multiplier to last border
         self.BD = 0.0000099  # border_deficiency
         self.ONE = 1 - self.BD
-            
-        self.vertices, self.triangles, uvs, uvs_ind, normals, normals_ind = self.level_maker(self.position)
+
+        if self.biome in self.known_biomes:
+            self.vertices, self.triangles, uvs, uvs_ind, normals, normals_ind = self.level_maker(self.position)
+        else:
+            if ESP:
+                print("Biome not found!")
+
+        # t1 = threading.Thread(target=format_vertices, args=(self.vertices, self.triangles))
+        # t2 = threading.Thread(target=format_vertices, args=(uvs, uvs_ind))
+        # t3 = threading.Thread(target=format_vertices, args=(normals, normals_ind))
+        #
+        # t1.start()
+        # t2.start()
+        # t3.start()
+        #
+        # self.vertices = t1.join()
+        # self.vertex_uvs = t2.join()
+        # self.normals = t3.join()
 
         self.vertices = format_vertices(self.vertices, self.triangles)
         self.vertex_uvs = format_vertices(uvs, uvs_ind)
         self.normals = format_vertices(normals, normals_ind)
-    
+
+        if self.material:
+            for _ in range(len(self.vertices * 3)):
+                self.colors.append(CHUNK_COLOR_R)
+                self.colors.append(CHUNK_COLOR_G)
+                self.colors.append(CHUNK_COLOR_B)
+
+            super().__init__(
+                vertices=self.vertices,
+                imagefile=self.texture,
+                vertex_normals=self.normals,
+                vertex_uvs=self.vertex_uvs,
+                vertex_colors=self.colors,
+                material=self.material
+            )
+
     def level_maker(self, center):
         """
         Chunk level maker
@@ -152,33 +193,71 @@ class Chunk:
             "DIRT_Z": (2, 3, 1, 2),
             "DIRT_Y": (2, 3, 0, 1)
         }
-            
+
+        # for rendering full chunk use [for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1):  # Y]
+        # for rendering only surface + 2 blocks deep use [temp = int(self.shematic[COLUMN][ROW]) + 1
+        #   for DEPTH in range(temp-2, temp):  # Y]
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
-                for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1):  # Y
+                temp = int(self.shematic[COLUMN][ROW]) + 1
+                for DEPTH in range(temp-4, temp):  # Y
                     self.blocks += 1
                         
-                    if DEPTH <= -5:  # SAND
-                        self.HM_F = 0
-                        self.HM_L = 1
-                        self.VM_F = 2
-                        self.VM_L = 3
-                    elif -4 <= DEPTH < 0:  # DIRT
-                        # dirt = True
-                        self.HM_F = 0
-                        self.HM_L = 1
-                        self.VM_F = 1
-                        self.VM_L = 2
-                    elif 0 <= DEPTH < 15:  # GRASS
-                        self.HM_F = 9
-                        self.HM_L = 10
-                        self.VM_F = 15
-                        self.VM_L = 16
-                    elif DEPTH >= 15:  # SNOW
-                        self.HM_F = 15
-                        self.HM_L = 16
-                        self.VM_F = 15
-                        self.VM_L = 16
+                    if DEPTH <= -5:
+                        if self.biome == "jungle":  # Jungle sand
+                            self.HM_F = 0
+                            self.HM_L = 1
+                            self.VM_F = 2
+                            self.VM_L = 3
+                        elif self.biome == "desert":
+                            self.HM_F = 0
+                            self.HM_L = 1
+                            self.VM_F = 2
+                            self.VM_L = 3
+                        elif self.biome == "snow":  # Snow pure snow
+                            self.HM_F = 15
+                            self.HM_L = 16
+                            self.VM_F = 15
+                            self.VM_L = 16
+                    elif -4 <= DEPTH < 0:
+                        if self.biome == "jungle":  # Jungle dirt
+                            # dirt = True
+                            self.HM_F = 0
+                            self.HM_L = 1
+                            self.VM_F = 1
+                            self.VM_L = 2
+                        elif self.biome == "desert":
+                            self.HM_F = 5
+                            self.HM_L = 6
+                            self.VM_F = 15
+                            self.VM_L = 16
+                        elif self.biome == "snow":  # Snow pure snow
+                            self.HM_F = 15
+                            self.HM_L = 16
+                            self.VM_F = 15
+                            self.VM_L = 16
+                    elif 0 <= DEPTH < 15:
+                        if self.biome == "jungle":  # Jungle grass
+                            self.HM_F = 9
+                            self.HM_L = 10
+                            self.VM_F = 15
+                            self.VM_L = 16
+                        elif self.biome == "desert":
+                            self.HM_F = 0
+                            self.HM_L = 1
+                            self.VM_F = 1
+                            self.VM_L = 2
+                        elif self.biome == "snow":  # Snow ice
+                            self.HM_F = 1
+                            self.HM_L = 2
+                            self.VM_F = 14
+                            self.VM_L = 15
+                    elif DEPTH >= 15:
+                        if self.biome == "jungle":  # Jungle snow
+                            self.HM_F = 1
+                            self.HM_L = 2
+                            self.VM_F = 14
+                            self.VM_L = 15
                     else:
                         print(f"ERROR: Unidentified block detected... ZXY:{ROW}/{COLUMN}/{DEPTH}")
                         
