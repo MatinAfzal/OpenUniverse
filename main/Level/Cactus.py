@@ -7,10 +7,12 @@ class Cactus:
         cactus generator
 
         Args:
-            position (pcenter_ygame.Vector3): tree center vertex position
-            max_height (int): tree maximum height
-            min_height (int): tree minimum depth
-            biome (str): tree biome
+            position (pcenter_ygame.Vector3): cactus center vertex position
+            max_height (int): cactus maximum height
+            min_height (int): cactus minimum depth
+            biome (str): cactus biome
+            img (path): texture
+            shematic (np.array): cactus generation sample
         """
 
         self.level_name = "tree1"

@@ -12,6 +12,8 @@ class Tree:
             max_height (int): tree maximum height
             min_height (int): tree minimum depth
             biome (str): tree biome
+            img (path): texture
+            shematic (np.array): tree generation sample
         """
 
         self.level_name = "tree1"

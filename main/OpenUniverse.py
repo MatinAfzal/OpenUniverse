@@ -17,7 +17,7 @@ class MultiShaders(Screen):
     def __init__(self):
         if ESP:
             print("Starting Engine...")
-        print("Project repo: https://github.com/MatinAfzal/3DICU")
+        print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
 
         start = datetime.now()
         print("Starting at:" + str(start.now()))
@@ -91,8 +91,11 @@ class MultiShaders(Screen):
         self.sun_start = int(time())
 
         # Object Attach
-        self.terrain = ObjectAttach(object_name="chunk", number_x=10, number_z=10)
-        self.trees = ObjectAttach(object_name="tree", number_x=10, number_z=10)
+        self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=15, number_z=15)
+        self.trees = ObjectAttach(object_name="tree", number_x=15, number_z=15)
+
+        # self.terrain = ObjectAttach(object_name="chunk", object_type="desert", number_x=10, number_z=10)
+        # self.trees = ObjectAttach(object_name="cactus", number_x=10, number_z=10)
 
         # Cell Attaches
         cell_start = datetime.now()
@@ -101,6 +104,7 @@ class MultiShaders(Screen):
 
         self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
         self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
 
     def initialise(self):
         # Variables
