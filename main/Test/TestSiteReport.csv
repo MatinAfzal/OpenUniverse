@@ -1,0 +1,3 @@
+time,test_sample,test_method,test_runtime,node_name,cpu_name,gpu_name,cpu_cores,gpu_memory,gpu_temp,system,version,machine,cpu_usage_before,cpu_usage_after,fps_min,fps_ave,fps_max
+2024-08-05,1,manual,20,Matin,"Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",NVIDIA GeForce RTX 4060,20,8188.0MB,45.0 °C,Windows,10,10.0.22631,12.5,10.8,8,59,62
+2024-08-05,1,manual,20,Matin,"Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",NVIDIA GeForce RTX 4060,20,8188.0MB,45.0 °C,Windows,10,10.0.22631,14.0,17.1,8,59,62

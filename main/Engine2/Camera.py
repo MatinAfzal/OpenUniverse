@@ -14,6 +14,9 @@ class Camera:
         if ESP:
             print("Loading Camera...")
         self.transformation = identity_mat()
+        self.transformation[0, 3] = CAMERA_POSITION[0]  # X
+        self.transformation[1, 3] = CAMERA_POSITION[1]  # Z
+        self.transformation[2, 3] = CAMERA_POSITION[2]  # Y
         self.last_mouse = pygame.math.Vector2(0, 0)
         self.mouse_sensitivity_x = CAMERA_MOUSE_SENSITIVITY_X
         self.mouse_sensitivity_y = CAMERA_MOUSE_SENSITIVITY_Y

@@ -1,27 +1,32 @@
 # This file prepares the page with initial processing settings and executes the main loop
-import datetime
 import os
-
 import pygame
 from pygame.locals import *
 from .Camera import *
 from .Settings2 import *
 from .Utils import *
+from Test.TestSite import *
+from datetime import datetime
 
 
 class Screen:
     """
-    Sceeen initialization
+    Screen initialization
     """
     def __init__(self, screen_posX, screen_posY, screen_width, screen_height):
+        self.run = True
+        self.test_site = None
         if ESP:
             print("Loading Screen...")
+        if TSS:
+            self.test_site = TestSite(action="test")
+
         # program window position init
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (screen_posX, screen_posY)
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.start_time = datetime.datetime.now()
+        self.start_time = datetime.now()
         self.stop_time = None
         
         pygame.init()
@@ -52,9 +57,17 @@ class Screen:
         Shots the engine down
         """
 
-        self.stop_time = datetime.datetime.now()
+        self.stop_time = datetime.now()
+        if TSS:
+            self.test_site.fps_test(self.fps_list)
         if ENGINE_REPORT_SAVE:
-            save_report(self.fps_list, self.start_time, self.stop_time, time_based=False)
+            result, error_type = save_report(self.fps_list, self.start_time, self.stop_time, time_based=ERT_B)
+            if result == 0 and ESP:
+                print("ERROR: Failed to save engine report!")
+                if ESP_VV:
+                    print("ESP_VV -> ", error_type)
+        if TSS:
+            self.test_site.after()
         self.run = False
 
     def initialise(self):
@@ -67,15 +80,16 @@ class Screen:
         pass
 
     def mainloop(self):
-        run = True
         self.initialise()
+        if TSS:
+            self.test_site.ready()
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
-        while run:
+        while self.run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.engine_shutdown()
-                    run = False
+                    self.run = False
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.mouse.set_visible(True)
@@ -83,7 +97,8 @@ class Screen:
                     if event.key == K_SPACE:
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
-
+            if TSS:
+                self.test_site.inside()
             self.camera_init()
             self.display()
             self.engine_fps()

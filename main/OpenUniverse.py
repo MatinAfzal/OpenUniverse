@@ -7,6 +7,8 @@ from Engine2.CellAttach import *
 from Level.ObjectAttach import *
 from Engine2.Cullings.DistanceCulling import *
 from Level.Shematic import *
+from Level.Chunk import *
+from Level.ManualChunkGen import *
 from time import sleep
 from datetime import datetime
 from time import time
@@ -17,6 +19,8 @@ class MultiShaders(Screen):
     def __init__(self):
         if ESP:
             print("Starting Engine...")
+        else:
+            print("ESP (ENGINE_STATUS_PRINT) is False!")
         print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
 
         start = datetime.now()
@@ -35,7 +39,7 @@ class MultiShaders(Screen):
 
         # Class init
         self.culling_distance = DistanceCulling(distance=DCD)
-        self.shematic = Shematic(1)
+        # self.shematic = Shematic(1)
 
         # Switching draw types
         self.draw_types = [GL_POINTS, GL_LINES, GL_TRIANGLES]
@@ -85,14 +89,15 @@ class MultiShaders(Screen):
         self.lightbolb_pos = pygame.Vector3(self.light_pos.x, self.light_pos.y + 5, self.light_pos.z)
         self.light = Light(self.light_pos, pygame.Vector3(1, 1, 1), 0)
         self.camera = Camera(self.screen_width, self.screen_height)
+        self.camera_pos = self.get_cam_pos()
         self.cube0 = LoadObject(
             self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
             location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
         self.sun_start = int(time())
 
         # Object Attach
-        self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=15, number_z=15)
-        self.trees = ObjectAttach(object_name="tree", number_x=15, number_z=15)
+        # self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=10, number_z=10)
+        # self.trees = ObjectAttach(object_name="tree", number_x=10, number_z=10)
 
         # self.terrain = ObjectAttach(object_name="chunk", object_type="desert", number_x=10, number_z=10)
         # self.trees = ObjectAttach(object_name="cactus", number_x=10, number_z=10)
@@ -102,9 +107,19 @@ class MultiShaders(Screen):
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
 
-        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
-        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
+        # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
+        self.manual_chunk_gen = ManualChunkGen(texture=self.img_texture, material=self.mat)
+        self.chunk = []
+        for x in range(self.camera_pos[0] - 50, self.camera_pos[0] + 50, 8):
+            for z in range(self.camera_pos[1] - 50, self.camera_pos[1] + 50, 8):
+                self.chunk.append(self.manual_chunk_gen.generate(x, z))
+
+    def get_cam_pos(self):
+        return (int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3]))
+
 
     def initialise(self):
         # Variables
@@ -185,9 +200,20 @@ class MultiShaders(Screen):
         if self.x_counter == 0:
             self.axes.draw(self.camera, self.light)
 
-        self.world.world.draw(self.camera, self.light)
-        self.forest.world.draw(self.camera, self.light)
+        # #####################RENDER#######################
+
+        # self.world.world.draw(self.camera, self.light)
+        # self.forest.world.draw(self.camera, self.light)
+
+        for chunk in self.chunk:
+            if self.culling_distance.chunk_in_distance(self.camera, chunk):
+                chunk.draw(self.camera, self.light)
+            else:
+                print("chunk ", chunk.chunk_center.x, chunk.chunk_center.z, "out!")
+
         self.cube0.draw(self.camera, self.light)
+
+        # #####################RENDER#######################
 
         sun_end = int(time())
         sun_current = self.sun_start - sun_end

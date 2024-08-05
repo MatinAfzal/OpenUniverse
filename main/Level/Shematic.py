@@ -4,7 +4,7 @@ from perlin_noise import PerlinNoise
 
 
 class Shematic:
-    def __init__(self, chunks) -> None:
+    def __init__(self, chunks: int = 8) -> None:
         self.x_max = 8
         self.y_max = 1
         self.z_max = 8

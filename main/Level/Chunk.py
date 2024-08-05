@@ -1,4 +1,5 @@
 import threading
+import numpy as np
 from Engine2.Utils import format_vertices
 from Engine2.Mesh import Mesh
 from Engine2.Settings2 import *
@@ -26,7 +27,10 @@ class Chunk(Mesh):
         self.material = material
         self.texture = img
         self.position = position
-        self.shematic = shematic
+        if material:
+            self.shematic = np.round(shematic).astype(int)
+        else:
+            self.shematic = shematic
         self.shematic_shape = shematic.shape
         self.image = img
         self.vertices = None
@@ -200,7 +204,7 @@ class Chunk(Mesh):
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
                 temp = int(self.shematic[COLUMN][ROW]) + 1
-                for DEPTH in range(temp-4, temp):  # Y
+                for DEPTH in range(temp-4, temp): # Y
                     self.blocks += 1
                         
                     if DEPTH <= -5:

@@ -66,21 +66,13 @@ def create_program(vertex_shader_code, fragment_shader_code):
 def save_report(fps_list, start_time, end_time, time_based=False):
     if ESP:
         print("Saving Report...")
-    uname = pl.uname()
-    fps_min = min(fps_list)
-    fps_max = max(fps_list)
-    fps_ave = sum(fps_list) / len(fps_list)
-    system = uname.system
-    node_name = uname.node
-    release = uname.release
-    version = uname.version
-    machine = uname.machine
-    processor = uname.processor
-    boot_time = psutil.boot_time()
-    pysical_cores = psutil.cpu_count(logical=False)
-    total_cores = psutil.cpu_count(logical=True)
-    cpu_usage = cpinfo()
-    gpu_id, gpu_name, gpu_total_memory, gpu_temperature = gpinfo()
+
+    (cpu_usage, processor, total_cores, pysical_cores, system, release, version, machine, boot_time,
+     node_name) = cpu_info()
+
+    gpu_id, gpu_name, gpu_total_memory, gpu_temperature = gpu_info()
+
+    fps_min, fps_ave, fps_max = fps_info(fps_list)
     
     report = f"""
     $ TIME $
@@ -104,40 +96,66 @@ def save_report(fps_list, start_time, end_time, time_based=False):
     / NODE: {node_name} | MACHINE: {machine} | BOOT: {boot_time}
     """
 
-    if time_based:
-        # Time based Report saving
-        
-        try:
-            dt_string = start_time.strftime("%d.%m.%Y--%H.%M.%S")
-            with open(f"Report\{dt_string}.txt", "w") as report_file:
-                report_file.write(report)
-        except:
-            return 0
-        
-        else:
-            return 1
+    # if time_based:
+    #     # Time based Report saving
+    #
+    #     try:
+    #         dt_string = start_time.strftime("%d.%m.%Y--%H.%M.%S")
+    #         with open(f"report\\{dt_string}.txt", "w") as report_file:
+    #             report_file.write(report)
+    #             report_file.close()
+    #     except Error as Exception:
+    #         return 0, type(Error).__name__
+    #     else:
+    #         return 1, None
+    #
+    # else:
+    #     try:
+    #         with open(r"report\engine_report.txt", "w") as report_file:
+    #             report_file.write(report)
+    #             report_file.close()
+    #     except Error as Exception:
+    #         return 0, type(Error).__name__
+    #     else:
+    #         return 1, None
+    return 1
 
-    try:
-        with open(f"Report\engine_report.txt", "w") as report_file:
-            report_file.write(report)
-    except:
-        return 0
-    else:
-        return 1
 
+def cpu_info() -> list:
+    uname = pl.uname()
+    system = uname.system
+    node_name = uname.node
+    release = uname.release
+    version = uname.version
+    machine = uname.machine
+    processor = uname.processor
+    boot_time = psutil.boot_time()
+    pysical_cores = psutil.cpu_count(logical=False)
+    total_cores = psutil.cpu_count(logical=True)
 
-def cpinfo():
     c_use = []
-    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
+    for i, percentage in enumerate(psutil.cpu_percent(interval=1.0, percpu=True)):
         c_use.append((i, percentage))
-    return c_use
+
+    return [c_use, processor, total_cores, pysical_cores, system, release, version, machine, boot_time, node_name]
 
 
-def gpinfo():
+def gpu_info() -> list:
     gpus = GPUtil.getGPUs()
+    gpu_id = None
+    gpu_name = None
+    gpu_total_memory = None
+    gpu_temperature = None
     for gpu in gpus:
         gpu_id = gpu.id
         gpu_name = gpu.name
         gpu_total_memory = f"{gpu.memoryTotal}MB"
         gpu_temperature = f"{gpu.temperature} °C"
-    return gpu_id, gpu_name, gpu_total_memory, gpu_temperature
+    return [gpu_id, gpu_name, gpu_total_memory, gpu_temperature]
+
+
+def fps_info(fps_list: list):
+    fps_min = round(min(fps_list[30:-30]))  # skip 0 in the list
+    fps_max = round(max(fps_list))
+    fps_ave = round(sum(fps_list) / len(fps_list))
+    return fps_min, fps_ave, fps_max
