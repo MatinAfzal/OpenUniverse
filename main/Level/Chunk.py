@@ -27,6 +27,8 @@ class Chunk(Mesh):
         self.material = material
         self.texture = img
         self.position = position
+        self.chunk_id = f"{self.position.x}:{self.position.y}:{self.position.z}:{self.biome}:{VERSION}"
+        self.load_status = True
         if material:
             self.shematic = np.round(shematic).astype(int)
         else:
@@ -204,9 +206,8 @@ class Chunk(Mesh):
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
                 temp = int(self.shematic[COLUMN][ROW]) + 1
-                for DEPTH in range(temp-4, temp): # Y
+                for DEPTH in range(temp-3, temp):  # Y
                     self.blocks += 1
-                        
                     if DEPTH <= -5:
                         if self.biome == "jungle":  # Jungle sand
                             self.HM_F = 0
@@ -264,19 +265,19 @@ class Chunk(Mesh):
                             self.VM_L = 15
                     else:
                         print(f"ERROR: Unidentified block detected... ZXY:{ROW}/{COLUMN}/{DEPTH}")
-                        
+
                     # Top vertices
                     TLU = (center.x - cs.get(COLUMN)[0], DEPTH, center.z - rs.get(ROW)[0])
                     TLD = (center.x - cs.get(COLUMN)[0], DEPTH, center.z - rs.get(ROW)[1])
                     TRU = (center.x - cs.get(COLUMN)[1], DEPTH, center.z - rs.get(ROW)[0])
                     TRD = (center.x - cs.get(COLUMN)[1], DEPTH, center.z - rs.get(ROW)[1])
-                    
+
                     # Bottom vertices
                     BLU = (center.x - cs.get(COLUMN)[0], DEPTH - 1, center.z - rs.get(ROW)[0])
                     BLD = (center.x - cs.get(COLUMN)[0], DEPTH - 1, center.z - rs.get(ROW)[1])
                     BRU = (center.x - cs.get(COLUMN)[1], DEPTH - 1, center.z - rs.get(ROW)[0])
                     BRD = (center.x - cs.get(COLUMN)[1], DEPTH - 1, center.z - rs.get(ROW)[1])
-                    
+
                     # Mesh triangles
                     level_vertices.extend([TLU, TLD, TRU, TRD, BLU, BLD, BRU, BRD])
                     level_triangles.extend([
@@ -293,16 +294,16 @@ class Chunk(Mesh):
                         6 + 8 * triangle_counter, 2 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 11
                         7 + 8 * triangle_counter, 2 + 8 * triangle_counter, 3 + 8 * triangle_counter  # TRIANGLE 12
                     ])
-                    
+
                     # UV vertices
                     if dirt:
                         self.update_uvs_face_dirt(_map)
                     else:
                         self.update_uvs_face()
-                        
+
                     for i in range(24):
                         level_uvs.append(self.uvs_face[i])
-                        
+
                     # UV triangles
                     level_uvs_ind.extend([
                         20 + 24 * uv_counter, 21 + 24 * uv_counter, 22 + 24 * uv_counter,  # TRIANGLE 1
@@ -318,7 +319,7 @@ class Chunk(Mesh):
                         12 + 24 * uv_counter, 13 + 24 * uv_counter, 14 + 24 * uv_counter,  # TRIANGLE 11
                         14 + 24 * uv_counter, 13 + 24 * uv_counter, 15 + 24 * uv_counter  # TRIANGLE 12
                     ])
-                                
+
                     triangle_counter += 1
                     uv_counter += 1
                     dirt = False

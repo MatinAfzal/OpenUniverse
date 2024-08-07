@@ -1,3 +1,4 @@
+import threading
 from random import randint
 from pygame import Vector3
 from Level.Chunk import *
@@ -75,3 +76,6 @@ class ObjectAttach:
                 else:
                     if randint(0, 2) in [0, 1]:
                         self.layer.append(Cactus(Vector3(x, 0, z), shematic=self.shematic.locate(x, z)))
+
+    # ###################THREADING FUNCTIONS#####################
+    # ###################THREADING FUNCTIONS#####################
