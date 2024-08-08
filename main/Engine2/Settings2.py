@@ -2,11 +2,11 @@ from OpenGL.GL import GL_LINES
 
 # OpenUniverse
 VERSION = "1.2.3-beta"
-CHUNKS = 10
-TREES = 10
+CHUNKS = 30
+TREES = 30
 
 # Debug settings
-ENGINE_STATUS_PRINT = True
+ENGINE_STATUS_PRINT = False
 ENGINE_STATUS_PRINT_VERY_VERBOSE = False  # Very Verbose, Print Errors and etc.
 ENGINE_REPORT_SAVE = False
 ENGINE_REPORT_TIME_BASED = False
@@ -18,6 +18,7 @@ ESP_VV = ENGINE_STATUS_PRINT_VERY_VERBOSE
 
 # TestSite settings
 TEST_SITE_STATUS = True
+TEST_SITE_COMMENT = ""
 
 TSS = TEST_SITE_STATUS
 
@@ -32,9 +33,17 @@ DCD = DISTANCE_CULLING_DISTANCE
 
 # Sky settings
 SKY_DYNAMIC = True
+SUN_STATUS = True  # There is a memory overflow problem when True
 SKY_SPEED = 0.000062
+SUN_SPEED_Y = 0.008
+SUN_SPEED_X = 0.038
+
+INITIAL_LIGHT_POS_X = -80
+INITIAL_LIGHT_POS_Z = 110
+INITIAL_LIGHT_POS_Y = -60
 
 # World settings
+WORLD_DEPTH = 3
 WORLD_BORDER = 500  # blocks
 WORLD_COLOR_R = 0.5
 WORLD_COLOR_G = 0.5

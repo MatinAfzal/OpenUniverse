@@ -20,7 +20,7 @@ class Chunk(Mesh):
             material (): if material -> for loop gen
         """
 
-        self.known_biomes = ["jungle", "desert", "snow"]
+        self.known_biomes = ["jungle", "desert", "snow", "superflat"]
         self.biome = biome
         self.chunk_center = position  # for distance culling
         self.level_name = "chunk"
@@ -205,8 +205,13 @@ class Chunk(Mesh):
         #   for DEPTH in range(temp-2, temp):  # Y]
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
-                temp = int(self.shematic[COLUMN][ROW]) + 1
-                for DEPTH in range(temp-3, temp):  # Y
+                if self.biome == "superflat":
+                    temp = 1
+                    n_temp = 0
+                else:
+                    temp = int(self.shematic[COLUMN][ROW]) + 1
+                    n_temp = temp - WORLD_DEPTH
+                for DEPTH in range(n_temp, temp):  # Y
                     self.blocks += 1
                     if DEPTH <= -5:
                         if self.biome == "jungle":  # Jungle sand
@@ -257,6 +262,11 @@ class Chunk(Mesh):
                             self.HM_L = 2
                             self.VM_F = 14
                             self.VM_L = 15
+                        elif self.biome == "superflat":  # Jungle grass
+                            self.HM_F = 9
+                            self.HM_L = 10
+                            self.VM_F = 15
+                            self.VM_L = 16
                     elif DEPTH >= 15:
                         if self.biome == "jungle":  # Jungle snow
                             self.HM_F = 1

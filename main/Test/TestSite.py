@@ -46,7 +46,7 @@ class TestSite:
         self.fps_ave = None
         self.fps_max = None
 
-        self.comment = ""
+        self.comment = TEST_SITE_COMMENT
 
         self.info_call_attempts = 1
         self.esp_threshold = False  # avoiding esp spam

@@ -54,7 +54,7 @@ class Camera:
     def update(self, program_id) -> None:
         if pygame.mouse.get_visible():
             return
-        
+
         mouse_pos = pygame.mouse.get_pos()
         mouse_change = self.last_mouse - pygame.math.Vector2(mouse_pos)
         pygame.mouse.set_pos(self.screen_width / 2, self.screen_height / 2)

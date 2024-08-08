@@ -1,5 +1,7 @@
 import threading
 from random import randint
+
+import numpy as np
 from pygame import Vector3
 from Level.Chunk import *
 from Level.Tree import *
@@ -48,6 +50,12 @@ class ObjectAttach:
     def chunk_binding(self):
         if ESP:
             print("Building Chunks (Multiple Level.Chunk Callings)...")
+        if self.object_type == "superflat":
+            shematic = np.ones(shape=(8, 8), dtype=np.uint8)
+            for x in range(self.sx, self.end_x, 8):
+                for z in range(self.sz, self.end_z, 8):
+                    self.layer.append(Chunk(biome=self.object_type, position=Vector3(x, 0, z),
+                                            shematic=shematic, material=self.shader, img=self.texture))
         for x in range(self.sx, self.end_x, 8):
             for z in range(self.sz, self.end_z, 8):
                 self.layer.append(Chunk(biome=self.object_type, position=Vector3(x, 0, z),
@@ -76,6 +84,3 @@ class ObjectAttach:
                 else:
                     if randint(0, 2) in [0, 1]:
                         self.layer.append(Cactus(Vector3(x, 0, z), shematic=self.shematic.locate(x, z)))
-
-    # ###################THREADING FUNCTIONS#####################
-    # ###################THREADING FUNCTIONS#####################

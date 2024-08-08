@@ -1,4 +1,7 @@
 import threading
+
+import pygame.mouse
+
 from Engine2.Screen import *
 from Engine2.LoadObject import *
 from Engine2.Light import *
@@ -86,8 +89,7 @@ class MultiShaders(Screen):
             print("Loading Entitis...")
         self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
 
-        self.light_pos = pygame.Vector3(-80, -60, 110)
-        self.initial_light_pos = self.light_pos.copy()
+        self.light_pos = pygame.Vector3(INITIAL_LIGHT_POS_X, INITIAL_LIGHT_POS_Y, INITIAL_LIGHT_POS_Z)
         self.lightbolb_pos = pygame.Vector3(self.light_pos.x, self.light_pos.y + 5, self.light_pos.z)
         self.light = Light(self.light_pos, pygame.Vector3(1, 1, 1), 0)
         self.camera = Camera(self.screen_width, self.screen_height)
@@ -110,8 +112,7 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-
-        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
         self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
 
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
@@ -126,13 +127,13 @@ class MultiShaders(Screen):
         self.alpha = 0.5
 
     def threading(self):
-        t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.terrain_thread_)
+        # t1 = threading.Thread(target=self.tree_thread_)
+        t2 = threading.Thread(target=self.superflat_thread_)
 
-        t1.start()
+        # t1.start()
         t2.start()
 
-        t1.join()
+        # t1.join()
         t2.join()
 
     def tree_thread_(self):
@@ -140,6 +141,9 @@ class MultiShaders(Screen):
 
     def terrain_thread_(self):
         self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=CHUNKS, number_z=CHUNKS)
+
+    def superflat_thread_(self):
+        self.terrain = ObjectAttach(object_name="chunk", object_type="superflat", number_x=CHUNKS, number_z=CHUNKS)
 
     def get_cam_pos(self):
         return int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3])
@@ -229,7 +233,6 @@ class MultiShaders(Screen):
             self.forest.world.draw(self.camera, self.light)
         except:
             pass
-
         self.cube0.draw(self.camera, self.light)
 
         # #####################RENDER#######################
@@ -237,6 +240,7 @@ class MultiShaders(Screen):
         now = int(time())
         current_time = self.start_time - now
 
+        # TODO: There is a memory overflow problem when SUN_STATUS == True.
         if current_time % 1 == 0 and SKY_DYNAMIC:
             if self.green >= 1 and self.blue >= 1:
                 self.sky_cycle_lock = True
@@ -254,19 +258,19 @@ class MultiShaders(Screen):
                 if self.green <= 0 and self.blue <= 0:
                     self.sky_cycle_lock = False
 
-        if current_time % 1 == 0 and self.s_counter == 1:
+        if current_time % 1 == 0 and self.s_counter == 1 and SUN_STATUS:
             if self.light_pos.y < 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.y += 0.008
+                self.light_pos.y += SUN_SPEED_Y
             elif self.light_pos.y >= 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.x += 0.038
+                self.light_pos.x += SUN_SPEED_X
             elif self.light_pos.y >= 118 and self.light_pos.x >= 298 and not self.sun_cycle_lock:
                 self.sun_cycle_lock = True
             elif self.sun_cycle_lock:
                 if self.light_pos.y <= -60 and self.sun_cycle_lock:
-                    self.light_pos = self.initial_light_pos.copy()
+                    self.light_pos = Vector3(INITIAL_LIGHT_POS_X, INITIAL_LIGHT_POS_Y, INITIAL_LIGHT_POS_Z)
                     self.sun_cycle_lock = False
                 else:
-                    self.light_pos.y -= 0.008
+                    self.light_pos.y -= SUN_SPEED_Y
 
             self.lightbolb_pos = self.light_pos
             self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
@@ -275,14 +279,8 @@ class MultiShaders(Screen):
             self.light.update(self.mat.program_id)
 
         if current_time % 1 == 0 and self.s_counter == 2:
-            self.light_pos.x -= 0.1
-            self.light_pos.z -= 0.1
-            self.lightbolb_pos = self.light_pos
-
-            self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
-                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8), esp_off=True)
-            self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
-            self.light.update(self.mat.program_id)
+            # Pausing the sun
+            pass
 
 
 if __name__ == "__main__":
