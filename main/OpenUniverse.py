@@ -1,7 +1,5 @@
 import threading
-
 import pygame.mouse
-
 from Engine2.Screen import *
 from Engine2.LoadObject import *
 from Engine2.Light import *
@@ -21,6 +19,7 @@ from time import time
 class MultiShaders(Screen):
 
     def __init__(self):
+        print("---------------------------------------------------------------------")
         if ESP:
             print("Starting Engine...")
         else:
@@ -29,6 +28,17 @@ class MultiShaders(Screen):
 
         start = datetime.now()
         print("Starting at:" + str(start.now()))
+
+        print("""
+    OpenUniverse Control Guide:
+        movement: w - a - s - d
+        yaw & pitch: mouse
+        world main axes: x
+        face culling: c
+        view mode: v        (GL_POINTS, GL_LINES, GL_TRIANGLES)
+        camera info: z      (1 second delay)
+        light control: l    (Pause, Grab, PLace, Continue)
+        """)
 
         super().__init__(SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT)
 
@@ -56,7 +66,7 @@ class MultiShaders(Screen):
         self.x_counter = 1
 
         # Moving sun
-        self.s_counter = 1
+        self.s_counter = 0
 
         # img
         self.img_texture = r"Textures\texture.png"
@@ -86,7 +96,7 @@ class MultiShaders(Screen):
 
         # Entity
         if ESP:
-            print("Loading Entitis...")
+            print("Loading Entities...")
         self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
 
         self.light_pos = pygame.Vector3(INITIAL_LIGHT_POS_X, INITIAL_LIGHT_POS_Y, INITIAL_LIGHT_POS_Z)
@@ -125,6 +135,12 @@ class MultiShaders(Screen):
         self.green = 0.0
         self.blue = 0.0
         self.alpha = 0.5
+
+        # Object control variables
+        self.object_grab = False
+
+        # Locks
+        self.object_creation_0 = False  # Avoiding memory overflow.
 
     def threading(self):
         # t1 = threading.Thread(target=self.tree_thread_)
@@ -167,7 +183,10 @@ class MultiShaders(Screen):
     def display(self):
         # glClearColor(0.5, 0.5 ,0.5, 0.5) # Middle gray
         # glClearColor(0.58, 0.85, 0.94, 0.5)  # Sky blue
-        glClearColor(self.red, self.green, self.blue, self.alpha)  # Sky night
+        if SKY_DYNAMIC:
+            glClearColor(self.red, self.green, self.blue, self.alpha)  # Sky night
+        else:
+            glClearColor(0.58, 0.85, 0.94, 0.5)  # Sky blue
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         #####
@@ -175,12 +194,18 @@ class MultiShaders(Screen):
         if keys[pygame.K_v]:
             if self.v_counter >= 3:
                 self.v_counter = 0
-            self.world.world_draw_type = self.draw_types[self.v_counter]
-            self.forest.world_draw_type = self.draw_types[self.v_counter]
-            if ESP:
-                print("Draw Type switched...")
-            self.world.load_world()
-            self.forest.load_world()
+            try:
+                self.world.world_draw_type = self.draw_types[self.v_counter]
+                self.forest.world_draw_type = self.draw_types[self.v_counter]
+                if ESP:
+                    print("Draw Type switched...")
+            except:
+                pass
+            try:
+                self.world.load_world()
+                self.forest.load_world()
+            except:
+                pass
             self.v_counter += 1
             sleep(0.3)
 
@@ -216,7 +241,7 @@ class MultiShaders(Screen):
             sleep(0.3)
 
         if keys[pygame.K_l]:
-            if self.s_counter >= 2:
+            if self.s_counter >= 3:
                 self.s_counter = 0
             else:
                 self.s_counter += 1
@@ -240,7 +265,6 @@ class MultiShaders(Screen):
         now = int(time())
         current_time = self.start_time - now
 
-        # TODO: There is a memory overflow problem when SUN_STATUS == True.
         if current_time % 1 == 0 and SKY_DYNAMIC:
             if self.green >= 1 and self.blue >= 1:
                 self.sky_cycle_lock = True
@@ -258,7 +282,7 @@ class MultiShaders(Screen):
                 if self.green <= 0 and self.blue <= 0:
                     self.sky_cycle_lock = False
 
-        if current_time % 1 == 0 and self.s_counter == 1 and SUN_STATUS:
+        if current_time % 1 == 0 and self.s_counter == 0 and SUN_STATUS:
             if self.light_pos.y < 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
                 self.light_pos.y += SUN_SPEED_Y
             elif self.light_pos.y >= 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
@@ -273,14 +297,18 @@ class MultiShaders(Screen):
                     self.light_pos.y -= SUN_SPEED_Y
 
             self.lightbolb_pos = self.light_pos
-            self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
-                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8), esp_off=True)
+            self.cube0.update(translation=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
             self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
             self.light.update(self.mat.program_id)
 
-        if current_time % 1 == 0 and self.s_counter == 2:
-            # Pausing the sun
-            pass
+        if self.s_counter == 2:
+            self.cube0.update(translation=self.camera.target)
+            self.object_grab = True
+            self.object_creation_0 = True
+
+        elif self.s_counter in [1, 3]:
+            self.object_grab = False
+            self.camera.camera_distance = -10
 
 
 if __name__ == "__main__":
@@ -289,4 +317,5 @@ if __name__ == "__main__":
         print("Mainloop Ends...")
     end = datetime.now()
     print("Ended at:" + str(end.now()))
+    print("---------------------------------------------------------------------")
     print("\n\n\n")

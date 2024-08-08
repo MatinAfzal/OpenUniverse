@@ -1,6 +1,7 @@
 # This file is responsible for creating and updating the world camera
 import pygame
 import math
+import time
 from .Transformations import *
 from .Uniform import *
 from .Settings2 import *
@@ -28,6 +29,8 @@ class Camera:
         self.screen_height = height
         self.yaw = 0
         self.pitch = 0
+        self.camera_distance = -10.0
+        self.target = pygame.Vector3(0, 0, 0)
 
     def perspective_mat(self, view_angle, aspect_ratio, near_plane, far_plane) -> np.ndarray:
         a = math.radians(view_angle)
@@ -50,6 +53,22 @@ class Camera:
         self.transformation = rotate(self.transformation, yaw, "Y", CAMERA_ROTATE_YAW_LOCAL)
         if (angle < CAMERA_ROTATE_PITCHUP_MAX and pitch > 0) or (angle > CAMERA_ROTATE_PITCHDOWN_MAX and pitch < 0):
             self.transformation = rotate(self.transformation, pitch, "X", CAMERA_ROTATE_PITCH_LOCAL)
+
+        camera_position = pygame.Vector3(self.transformation[0, 3], self.transformation[1, 3],
+                                         self.transformation[2, 3])
+
+        camera_target = camera_position + (self.camera_distance * forward)
+
+        self.target = camera_target
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_z]:
+            print(f"""
+            Camera info:
+                - Position: {round(camera_position.x, 2)} {round(camera_position.y, 2)}, {round(camera_position.z, 2)}
+                - Forward: {round(forward.x, 2)} {round(forward.y, 2)} {round(forward.z, 2)}
+            """)
+            time.sleep(1)
 
     def update(self, program_id) -> None:
         if pygame.mouse.get_visible():

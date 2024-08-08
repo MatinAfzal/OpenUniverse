@@ -97,6 +97,12 @@ class Screen:
                     if event.key == K_SPACE:
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
+                if event.type == pygame.MOUSEWHEEL:
+                    if self.object_grab:
+                        if event.y > 0:
+                            self.camera.camera_distance -= 2
+                        if event.y < 0:
+                            self.camera.camera_distance += 2
             if TSS:
                 self.test_site.inside()
             self.camera_init()
