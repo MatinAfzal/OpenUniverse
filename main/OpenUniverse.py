@@ -256,9 +256,9 @@ class MultiShaders(Screen):
 
         if current_time % 1 == 0 and self.s_counter == 1:
             if self.light_pos.y < 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.y += 0.078
+                self.light_pos.y += 0.008
             elif self.light_pos.y >= 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.x += 0.138
+                self.light_pos.x += 0.038
             elif self.light_pos.y >= 118 and self.light_pos.x >= 298 and not self.sun_cycle_lock:
                 self.sun_cycle_lock = True
             elif self.sun_cycle_lock:
@@ -266,11 +266,11 @@ class MultiShaders(Screen):
                     self.light_pos = self.initial_light_pos.copy()
                     self.sun_cycle_lock = False
                 else:
-                    self.light_pos.y -= 0.078
+                    self.light_pos.y -= 0.008
 
             self.lightbolb_pos = self.light_pos
             self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
-                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8), esp_off=True)
             self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
             self.light.update(self.mat.program_id)
 
@@ -280,7 +280,7 @@ class MultiShaders(Screen):
             self.lightbolb_pos = self.light_pos
 
             self.cube0 = LoadObject(self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
-                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
+                                    location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8), esp_off=True)
             self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
             self.light.update(self.mat.program_id)
 

@@ -18,9 +18,11 @@ class LoadObject(Mesh):
                  material=None,
                  memory_save=False,
                  memory_save_chunk=False,
-                 distance_range=12
+                 distance_range=12,
+                 esp_off=False
                  ):
-        if ESP:
+
+        if ESP and not esp_off:
             print("Loading Objects...")
         
         # Mesh sections
@@ -50,7 +52,8 @@ class LoadObject(Mesh):
                          material=material,
                          memory_save=memory_save,
                          memory_save_chunk=memory_save_chunk,
-                         distance_range=distance_range)
+                         distance_range=distance_range,
+                         esp_off=esp_off)
 
     def load_drawing(self, filename):
         vertices = []

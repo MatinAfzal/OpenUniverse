@@ -16,7 +16,7 @@ class TestSite:
 
     #
     test_sample:
-        - V1-S -> 1: 1-10-10-10-10-P-T-D-20
+        - V1-S -> 1: 1-10-10-10-10-P-T-D-60
 
     test_method:
         - manual: you control!
@@ -46,8 +46,10 @@ class TestSite:
         self.fps_ave = None
         self.fps_max = None
 
-        self.info_call_attempts = 1
+        self.comment = ""
 
+        self.info_call_attempts = 1
+        self.esp_threshold = False  # avoiding esp spam
 
         if action not in self.known_actions:
             if ESP:
@@ -56,8 +58,7 @@ class TestSite:
             self.test = True
             self.before = cpu_info()
             if test_sample == "1":
-                self.test_time = 20
-
+                self.test_time = 60
 
     def ready(self):
         """
@@ -71,10 +72,11 @@ class TestSite:
         """
         inside the loop
         """
-        if not self.check_test() and self.info_call_attempts == 1:
-            self.cpu_after = cpu_info()
-            self.gpu_after = gpu_info()
-            self.info_call_attempts += 1
+        if self.info_call_attempts == 1:
+            if not self.check_test():
+                self.cpu_after = cpu_info()
+                self.gpu_after = gpu_info()
+                self.info_call_attempts += 1
         else:
             pass
 
@@ -83,15 +85,13 @@ class TestSite:
 
     def check_test(self):
         now = int(time())
-        diff = now - self.ready_time
-        if diff >= self.test_time:
-            self.test = False
-            return 0  # terminate test
-        elif diff % 10 == 0:
+        diff = abs(self.ready_time - now)
+        if diff == self.test_time:
             if ESP:
-                print(f"TestSite: running sample {self.test_sample}, {self.test_time - diff} left...")
-        else:
-            return 1  # continue the test
+                print(f"TestSite: sample {self.test_sample} ended!")
+                return 0
+            return 0
+        return 1  # continue the test
 
     def after(self):
         """
@@ -105,25 +105,30 @@ class TestSite:
         for j in  self.cpu_after[0]:
             cpu_usage_after += j[1]
 
-        # node_name, cpu_name, gpu_name, cpu_cores, gpu_memory, gpu_temp, system, version, machine
+        memory_usage = memory_info()
+
+        # node_name, cpu_name, gpu_name, cpu_cores, gpu_memory, gpu_temp, system, version, machine.
+        # machine not saving for security reasons!
         test_result = {"time": [str(date.today())],
                        "test_sample": [self.test_sample],
                        "test_method": [self.test_method],
                        "test_runtime": [self.test_time],
                        "node_name": [self.cpu_before[9]],
-                       "cpu_name": [self.cpu_before[1]],
+                       "cpu_name": [self.cpu_before[1][0:7]],  # less information = more security
                        "gpu_name": [self.gpu_before[1]],
                        "cpu_cores": [self.cpu_before[2]],
                        "gpu_memory": [self.gpu_before[2]],
                        "gpu_temp": [self.gpu_before[3]],
                        "system": [self.cpu_before[4]],
                        "version": [self.cpu_before[5]],
-                       "machine": [self.cpu_before[6]],
                        "cpu_usage_before": [cpu_usage_before],
                        "cpu_usage_after": [cpu_usage_after],
+                       "memory_info": [memory_usage],
+                       "gpu_usage": [self.gpu_after[4]],
                        "fps_min": [self.fps_min],
                        "fps_ave": [self.fps_ave],
-                       "fps_max": [self.fps_max]}
+                       "fps_max": [self.fps_max],
+                       "comment": [self.comment]}
 
         data = pd.DataFrame(test_result)
         dpath = r"Test\TestSiteReport.csv"

@@ -146,12 +146,14 @@ def gpu_info() -> list:
     gpu_name = None
     gpu_total_memory = None
     gpu_temperature = None
+    gpu_memory_usage = None
     for gpu in gpus:
         gpu_id = gpu.id
         gpu_name = gpu.name
         gpu_total_memory = f"{gpu.memoryTotal}MB"
         gpu_temperature = f"{gpu.temperature} °C"
-    return [gpu_id, gpu_name, gpu_total_memory, gpu_temperature]
+        gpu_memory_usage = gpu.memoryUsed
+    return [gpu_id, gpu_name, gpu_total_memory, gpu_temperature, gpu_memory_usage]
 
 
 def fps_info(fps_list: list):
@@ -159,3 +161,8 @@ def fps_info(fps_list: list):
     fps_max = round(max(fps_list))
     fps_ave = round(sum(fps_list) / len(fps_list))
     return fps_min, fps_ave, fps_max
+
+
+def memory_info() -> list:
+    memory_usage = psutil.virtual_memory()
+    return memory_usage

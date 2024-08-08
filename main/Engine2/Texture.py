@@ -2,9 +2,10 @@ import pygame
 from OpenGL.GL import *
 from .Settings2 import *
 
-class Texture():
-    def __init__(self, filename=None):
-        if ESP:
+
+class Texture:
+    def __init__(self, filename=None, esp_off=False):
+        if ESP and not esp_off:
             print("Loading Textures...")
         self.surface = None
         self.texture_id = glGenTextures(1)
@@ -16,7 +17,7 @@ class Texture():
         width = self.surface.get_width()
         height = self.surface.get_height()
 
-        pixel_data = pygame.image.tostring(self.surface, "RGBA", 1)
+        pixel_data = pygame.image.tostring(self.surface, "RGBA", True)
         glBindTexture(GL_TEXTURE_2D, self.texture_id)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel_data)
         glGenerateMipmap(GL_TEXTURE_2D)

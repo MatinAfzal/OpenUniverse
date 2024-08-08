@@ -24,13 +24,16 @@ class Mesh:
                  material=None,
                  memory_save=True,
                  memory_save_chunk=False,
-                 distance_range=12
+                 distance_range=12,
+                 esp_off=False
                  ):
-        if ESP:
+
+        self.esp_off = esp_off
+        if ESP and not esp_off:
             print("Building Mesh...")
         
         self.position = translation
-        self.material= material
+        self.material = material
         self.vertices = vertices
         self.vertex_normals = vertex_normals
         self.vertex_uvs = vertex_uvs
@@ -71,7 +74,7 @@ class Mesh:
         self.texture = None
         
         if imagefile is not None:
-            self.image = Texture(imagefile)
+            self.image = Texture(imagefile, esp_off=self.esp_off)
             self.texture = Uniform("sampler2D", [self.image.texture_id, 1])
 
     def draw_force(self, camera, light, draw_type_force=None):
