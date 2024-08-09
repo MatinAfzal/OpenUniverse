@@ -1,6 +1,8 @@
 # This file prepares the page with initial processing settings and executes the main loop
 import os
+import time
 import pygame
+from time import sleep
 from pygame.locals import *
 from .Camera import *
 from .Settings2 import *
@@ -41,6 +43,12 @@ class Screen:
         self.camera = None
         self.program_id = None
         self.fps_list = []
+
+        # Object control variables
+        self.builded_objects = []
+        self.mouse_wheel = 0
+        self.right_click = 0
+        self.object_build_status = False
 
     def engine_fps(self) -> None:
         """
@@ -97,12 +105,31 @@ class Screen:
                     if event.key == K_SPACE:
                         pygame.mouse.set_visible(False)
                         pygame.event.set_grab(True)
+                    if event.key == K_m:
+                        print(f"""
+        Memory info:
+            {memory_info()}
+                        """)
+                        sleep(1)
                 if event.type == pygame.MOUSEWHEEL:
                     if self.object_grab:
                         if event.y > 0:
-                            self.camera.camera_distance -= 2
+                            self.camera.camera_distance -= 0.5
+                            self.mouse_wheel += 1
                         if event.y < 0:
-                            self.camera.camera_distance += 2
+                            self.camera.camera_distance += 0.5
+                            self.mouse_wheel += 1
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # 1 is left click.
+                        self.builded_objects.append(self.build_object)
+                        self.object_build_status = False
+                    if event.button == 3:  # 3 == Right click
+                        if self.right_click > 7:  # available ObjectBuilder objects
+                            self.right_click = 0
+                        else:
+                            self.object_build_status = False
+                            self.right_click += 1
+
             if TSS:
                 self.test_site.inside()
             self.camera_init()

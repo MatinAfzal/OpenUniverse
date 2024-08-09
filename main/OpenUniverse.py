@@ -1,5 +1,6 @@
 import threading
 import pygame.mouse
+from OpenGL.GL import *
 from Engine2.Screen import *
 from Engine2.LoadObject import *
 from Engine2.Light import *
@@ -11,6 +12,7 @@ from Engine2.Cullings.DistanceCulling import *
 from Level.Shematic import *
 from Level.Chunk import *
 from Level.ManualChunkGen import *
+from Level.ObjectBuilder import *
 from time import sleep
 from datetime import datetime
 from time import time
@@ -33,11 +35,16 @@ class MultiShaders(Screen):
     OpenUniverse Control Guide:
         movement: w - a - s - d
         yaw & pitch: mouse
-        world main axes: x
-        face culling: c
-        view mode: v        (GL_POINTS, GL_LINES, GL_TRIANGLES)
-        camera info: z      (1 second delay)
-        light control: l    (Pause, Grab, PLace, Continue)
+        world main axes: x  (0.3 second interrupt)
+        face culling: c     (0.3 second interrupt)
+        view mode: v        (GL_POINTS, GL_LINES, GL_TRIANGLES) (0.3 second interrupt)
+        camera info: z      (1 second interrupt)
+        light control: l    (Pause, Grab, PLace, Continue) (0.3 second interrupt)
+        memory info: m      (1 second interrupt)
+        builder mode: b     (0.3 second interrupt)
+            - Change block: MouseRightClick
+            - Place Block: MouseLeftClick
+            - Distance: MouseScroll
         """)
 
         super().__init__(SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -67,6 +74,9 @@ class MultiShaders(Screen):
 
         # Moving sun
         self.s_counter = 0
+
+        # Builder mode
+        self.b_counter = 0
 
         # img
         self.img_texture = r"Textures\texture.png"
@@ -122,7 +132,7 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
         self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
 
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
@@ -138,18 +148,20 @@ class MultiShaders(Screen):
 
         # Object control variables
         self.object_grab = False
+        self.build_object = None
+        self.distance_reset_lock = False
 
         # Locks
         self.object_creation_0 = False  # Avoiding memory overflow.
 
     def threading(self):
-        # t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.superflat_thread_)
+        t1 = threading.Thread(target=self.tree_thread_)
+        t2 = threading.Thread(target=self.terrain_thread_)
 
-        # t1.start()
+        t1.start()
         t2.start()
 
-        # t1.join()
+        t1.join()
         t2.join()
 
     def tree_thread_(self):
@@ -163,6 +175,12 @@ class MultiShaders(Screen):
 
     def get_cam_pos(self):
         return int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3])
+
+    def builder_handler(self, block):
+        self.build_object = ObjectBuilder(object_type=block, translation=self.camera.target,
+                                          shader=self.mat)
+        self.object_build_status = True
+        self.object_grab = True
 
     def initialise(self):
         # Variables
@@ -248,6 +266,20 @@ class MultiShaders(Screen):
 
             sleep(0.3)
 
+        if keys[pygame.K_b]:
+            if self.b_counter >= 1:
+                self.b_counter = 0
+                self.object_build_status = False
+                if ESP:
+                    print("Builder mode disabled...")
+            else:
+                self.b_counter += 1
+                self.camera.camera_distance = -10
+                if ESP:
+                    print("World Center axes enabled...")
+
+            sleep(0.3)
+
         # #####################RENDER#######################
         glPointSize(10)
         if self.x_counter == 0:
@@ -256,11 +288,20 @@ class MultiShaders(Screen):
         try:
             self.world.world.draw(self.camera, self.light)
             self.forest.world.draw(self.camera, self.light)
-        except:
+        finally:
             pass
+
+        try:
+            for build in self.builded_objects:
+                build.object.draw(self.camera, self.light)
+        finally:
+            pass
+
         self.cube0.draw(self.camera, self.light)
 
         # #####################RENDER#######################
+
+        # #####################SUN&SKY######################
 
         now = int(time())
         current_time = self.start_time - now
@@ -282,7 +323,7 @@ class MultiShaders(Screen):
                 if self.green <= 0 and self.blue <= 0:
                     self.sky_cycle_lock = False
 
-        if current_time % 1 == 0 and self.s_counter == 0 and SUN_STATUS:
+        if current_time % 1 == 0 and self.s_counter == 0 and SUN_STATUS:  # Move
             if self.light_pos.y < 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
                 self.light_pos.y += SUN_SPEED_Y
             elif self.light_pos.y >= 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
@@ -301,14 +342,58 @@ class MultiShaders(Screen):
             self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
             self.light.update(self.mat.program_id)
 
-        if self.s_counter == 2:
+        if self.s_counter == 2:  # Grab
+            self.distance_reset_lock = False
             self.cube0.update(translation=self.camera.target)
             self.object_grab = True
             self.object_creation_0 = True
 
-        elif self.s_counter in [1, 3]:
+        elif self.s_counter in [1, 3] and not self.distance_reset_lock:  # Pause
+            self.distance_reset_lock = True
             self.object_grab = False
             self.camera.camera_distance = -10
+
+        # #####################SUN&SKY######################
+
+        # ##################ObjectBuilder###################
+
+        if self.b_counter == 1:
+            # self.mouse_wheel = 0
+            if self.right_click == 0 and not self.object_build_status:
+                self.builder_handler("crate")
+
+            if self.right_click == 1 and not self.object_build_status:
+                self.builder_handler("wood")
+
+            if self.right_click == 2 and not self.object_build_status:
+                self.builder_handler("brick")
+
+            if self.right_click == 3 and not self.object_build_status:
+                self.builder_handler("glass")
+
+            if self.right_click == 4 and not self.object_build_status:
+                self.builder_handler("library")
+
+            if self.right_click == 5 and not self.object_build_status:
+                self.builder_handler("tnt")
+
+            if self.right_click == 6 and not self.object_build_status:
+                self.builder_handler("prison")
+
+            if self.right_click == 7 and not self.object_build_status:
+                self.builder_handler("metal")
+
+            if self.right_click == 7 and not self.object_build_status:
+                self.builder_handler("?")
+
+            if self.object_build_status:
+                try:
+                    self.build_object.update(translation=self.camera.target)
+                    self.build_object.object.draw(self.camera, self.light)
+                finally:
+                    pass
+
+        # ##################ObjectBuilder###################
 
 
 if __name__ == "__main__":
@@ -318,4 +403,4 @@ if __name__ == "__main__":
     end = datetime.now()
     print("Ended at:" + str(end.now()))
     print("---------------------------------------------------------------------")
-    print("\n\n\n")
+    print("\n\n")

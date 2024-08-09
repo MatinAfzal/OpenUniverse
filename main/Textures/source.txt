@@ -1,0 +1,9 @@
+-----The textures of this file are taken from the source below, which according to the provider is free to use.-----
+
+Source: https://opengameart.org/content/big-pack-of-hand-painted-tiling-textures
+
+Provider:
+    This is a 128 x 128 texture pack for Minetest that I made. Besides a big number of tiling textures of various materials (grass, dirt, snow, metals, stone, sand, ...) there are also item icons, tools, plants etc.
+    It is all public domain, made with GIMP, largely as an original work, but also with reuse of other public domain resources. I also utilized neural style transfer to make photo textures look like hand painted. The list of third party sources can be found in the repository with the pack:
+    https://gitlab.com/drummyfish/minetest-texturepack
+    Credit appreciated but not needed. Even more appreciated is if you share your own work under a free license in return :-)
