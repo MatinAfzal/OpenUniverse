@@ -10,13 +10,14 @@ class TestSite:
     """
     format: format_version-chunk_num_x-chunk_num_z-obj_num_x-obj_num_z-chunk_type-object_type-lighting_method-test_time
     details:
-        - chunk_type -> [P: Plain, D: Desert, S: Snow]
-        - object_type -> [T: Tree, C: Cactus]
+        - chunk_type -> [P: Plain, D: Desert, S: Snow, F: Flat]
+        - object_type -> [T: Tree, C: Cactus, N: Nothing]
         - lighting_method -> [D: Dynamic Lighting]
 
     #
     test_sample:
-        - V1-S -> 1: 1-10-10-10-10-P-T-D-60
+        - V1-S -> 1: 1-10-10-10-10-P-T-D-60 -> Simple world test
+        - V1-I -> 2: 1-80-80-0-0-F-N-D-60 -> Image test
 
     test_method:
         - manual: you control!
@@ -26,10 +27,10 @@ class TestSite:
         - aggressive: move around / look around / open FPS / fast
     """
 
-    def __init__(self, action="view", test_sample="1", test_method="manual"):
+    def __init__(self, action="view", test_sample="2", test_method="manual"):
 
         self.known_actions = ["test", "view"]
-        self.known_settings = ["V1-S"]
+        self.known_settings = ["V1-S", "V1-I"]
         self.test_sample = test_sample
         self.test_method = test_method
         self.ready_time = None
@@ -58,6 +59,8 @@ class TestSite:
             self.test = True
             self.before = cpu_info()
             if test_sample == "1":
+                self.test_time = 60
+            else:
                 self.test_time = 60
 
     def ready(self):

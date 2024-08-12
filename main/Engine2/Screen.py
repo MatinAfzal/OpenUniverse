@@ -35,7 +35,7 @@ class Screen:
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
         pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
-        pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 24) # GPU DEPTH BUFFER SIZE
+        pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, SCREEN_DEPTH_SIZE)  # GPU DEPTH BUFFER SIZE
         
         self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL, pygame.FULLSCREEN)
         pygame.display.set_caption(SCREEN_CAPTION_LOADING)
@@ -124,7 +124,7 @@ class Screen:
                         self.builded_objects.append(self.build_object)
                         self.object_build_status = False
                     if event.button == 3:  # 3 == Right click
-                        if self.right_click > 7:  # available ObjectBuilder objects
+                        if self.right_click >= 7:  # available ObjectBuilder objects
                             self.right_click = 0
                         else:
                             self.object_build_status = False

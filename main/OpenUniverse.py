@@ -80,9 +80,13 @@ class MultiShaders(Screen):
 
         # img
         self.img_texture = r"Textures\texture.png"
+        self.img_atlas2 = r"Textures\OpenUniverseAtlas-1.png"
         self.img_icu = r"Textures\ICU.png"
         self.img_sun = r"Textures\sun.jpeg"
         self.img_cactus = r"Textures\cactus.png"
+        self.image_matin = r"Images\matin_afzal.jpg"
+        self.image_monalisa = r"Images\mona_lisa.jpg"
+        self.image_dinner = r"Images\the_last_dinner.jpg"
 
         # Loads
         if ESP:
@@ -132,8 +136,9 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
-        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)
 
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
         # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
@@ -155,13 +160,13 @@ class MultiShaders(Screen):
         self.object_creation_0 = False  # Avoiding memory overflow.
 
     def threading(self):
-        t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.terrain_thread_)
+        # t1 = threading.Thread(target=self.tree_thread_)
+        t2 = threading.Thread(target=self.image_thread_)
 
-        t1.start()
+        # t1.start()
         t2.start()
 
-        t1.join()
+        # t1.join()
         t2.join()
 
     def tree_thread_(self):
@@ -172,6 +177,9 @@ class MultiShaders(Screen):
 
     def superflat_thread_(self):
         self.terrain = ObjectAttach(object_name="chunk", object_type="superflat", number_x=CHUNKS, number_z=CHUNKS)
+
+    def image_thread_(self):
+        self.terrain = ObjectAttach(object_name="image", texture=self.image_matin)
 
     def get_cam_pos(self):
         return int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3])
@@ -287,15 +295,15 @@ class MultiShaders(Screen):
 
         try:
             self.world.world.draw(self.camera, self.light)
-            self.forest.world.draw(self.camera, self.light)
-        finally:
+            # self.forest.world.draw(self.camera, self.light)
+        except:
             pass
 
-        try:
-            for build in self.builded_objects:
+        for build in self.builded_objects:
+            try:
                 build.object.draw(self.camera, self.light)
-        finally:
-            pass
+            except:
+                continue
 
         self.cube0.draw(self.camera, self.light)
 

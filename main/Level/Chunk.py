@@ -6,7 +6,8 @@ from Engine2.Settings2 import *
 
 
 class Chunk(Mesh):
-    def __init__(self, biome="jungle", position=None, max_height=10, min_depth=-10, shematic=None, img=None, material=None) -> None:
+    def __init__(self, biome="jungle", position=None, max_height=10, min_depth=-10, shematic=None, img=None,
+                 material=None, is_image=False) -> None:
         """
         Chunk generator
 
@@ -20,7 +21,7 @@ class Chunk(Mesh):
             material (): if material -> for loop gen
         """
 
-        self.known_biomes = ["jungle", "desert", "snow", "superflat"]
+        self.known_biomes = ["jungle", "desert", "snow", "superflat", "image"]
         self.biome = biome
         self.chunk_center = position  # for distance culling
         self.level_name = "chunk"
@@ -208,7 +209,11 @@ class Chunk(Mesh):
                 if self.biome == "superflat":
                     temp = 1
                     n_temp = 0
-                else:
+                elif self.biome == "image":
+                    temp = 1
+                    n_temp = 0
+                    block_map = self.shematic[COLUMN][ROW]
+                else:  # Normal terrain
                     temp = int(self.shematic[COLUMN][ROW]) + 1
                     n_temp = temp - WORLD_DEPTH
                 for DEPTH in range(n_temp, temp):  # Y
@@ -267,10 +272,30 @@ class Chunk(Mesh):
                             self.HM_L = 10
                             self.VM_F = 15
                             self.VM_L = 16
+                        elif self.biome == "image" and block_map <= 40:  # Black wool in Atlas 2
+                            self.HM_F = 3
+                            self.HM_L = 4
+                            self.VM_F = 13
+                            self.VM_L = 14
+                        elif self.biome == "image" and 120 >= block_map > 40:  # Dark gray wool in Atlas 2
+                            self.HM_F = 8
+                            self.HM_L = 9
+                            self.VM_F = 13
+                            self.VM_L = 14
+                        elif self.biome == "image" and 120 < block_map > 200:  # Gray wool in Atlas 2
+                            self.HM_F = 10
+                            self.HM_L = 11
+                            self.VM_F = 13
+                            self.VM_L = 14
+                        elif self.biome == "image" and block_map <= 255:  # White wool in Atlas 2
+                            self.HM_F = 3
+                            self.HM_L = 4
+                            self.VM_F = 12
+                            self.VM_L = 13
                     elif DEPTH >= 15:
                         if self.biome == "jungle":  # Jungle snow
-                            self.HM_F = 1
-                            self.HM_L = 2
+                            self.HM_F = 0
+                            self.HM_L = 1
                             self.VM_F = 14
                             self.VM_L = 15
                     else:
@@ -290,11 +315,12 @@ class Chunk(Mesh):
 
                     # Mesh triangles
                     level_vertices.extend([TLU, TLD, TRU, TRD, BLU, BLD, BRU, BRD])
+
                     level_triangles.extend([
-                        0 + 8 * triangle_counter, 1 + 8 * triangle_counter, 2 + 8 * triangle_counter,  # TRIANGLE 1
-                        2 + 8 * triangle_counter, 1 + 8 * triangle_counter, 3 + 8 * triangle_counter,  # TRIANGLE 2
-                        4 + 8 * triangle_counter, 5 + 8 * triangle_counter, 6 + 8 * triangle_counter,  # TRIANGLE 3
-                        6 + 8 * triangle_counter, 5 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 4
+                        0 + 8 * triangle_counter, 1 + 8 * triangle_counter, 2 + 8 * triangle_counter,  # TRIANGLE 1 TOP
+                        2 + 8 * triangle_counter, 1 + 8 * triangle_counter, 3 + 8 * triangle_counter,  # TRIANGLE 2 TOP
+                        4 + 8 * triangle_counter, 5 + 8 * triangle_counter, 6 + 8 * triangle_counter,  # TRIANGLE 3 BOT
+                        6 + 8 * triangle_counter, 5 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 4 BOT
                         1 + 8 * triangle_counter, 5 + 8 * triangle_counter, 3 + 8 * triangle_counter,  # TRIANGLE 5
                         3 + 8 * triangle_counter, 5 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 6
                         0 + 8 * triangle_counter, 4 + 8 * triangle_counter, 2 + 8 * triangle_counter,  # TRIANGLE 7

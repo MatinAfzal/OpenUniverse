@@ -7,6 +7,7 @@ from Level.Chunk import *
 from Level.Tree import *
 from Level.Cactus import *
 from Level.Shematic import Shematic
+from Level.ImageBuilder import *
 from Engine2.Settings2 import *
 
 
@@ -20,7 +21,7 @@ class ObjectAttach:
         if ESP:
             print("Attaching Objects...")
 
-        self.known_objects = ["chunk", "tree", "cactus"]
+        self.known_objects = ["chunk", "tree", "cactus", "image"]
         self.object_name = object_name
         self.object_type = object_type
         self.layer = []
@@ -43,6 +44,8 @@ class ObjectAttach:
             self.tree_binding()
         elif object_name == "cactus":
             self.cactus_binding()
+        elif object_name == "image":
+            self.image_binding()
         else:
             # Impossible to reach!
             pass
@@ -84,3 +87,14 @@ class ObjectAttach:
                 else:
                     if randint(0, 2) in [0, 1]:
                         self.layer.append(Cactus(Vector3(x, 0, z), shematic=self.shematic.locate(x, z)))
+
+    def image_binding(self):
+        if ESP:
+            print("Building Image...")
+        instnace = ImageBuilder(self.texture)
+        for x in range(0, 320, 8):
+            for z in range(0, 320, 8):
+                shematic = instnace.img_array[x:x + 8, z:z + 8]
+                self.layer.append(Chunk(biome="image", position=Vector3(x, 0, z),
+                                        shematic=shematic, material=self.shader, img=self.texture,
+                                        is_image=True))
