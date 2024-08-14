@@ -47,6 +47,11 @@ class MultiShaders(Screen):
             - Distance: MouseScroll
         """)
 
+        # Object Attach
+        self.trees = None
+        self.terrain = None
+        self.threading()
+
         super().__init__(SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         self.plane = None
@@ -123,12 +128,12 @@ class MultiShaders(Screen):
             location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
         self.start_time = int(time())
 
+        # Attaching objects before super initial to avoid screen crashes
+
         # Object Attach
-        self.trees = None
-        self.terrain = None
-
-        self.threading()
-
+        # self.trees = None
+        # self.terrain = None
+        # self.threading()
         # self.terrain = ObjectAttach(object_name="chunk", object_type="desert", number_x=10, number_z=10)
         # self.trees = ObjectAttach(object_name="cactus", number_x=10, number_z=10)
 
@@ -136,9 +141,9 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
-        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
-        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)
+        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
+        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)
 
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
         # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
@@ -160,13 +165,13 @@ class MultiShaders(Screen):
         self.object_creation_0 = False  # Avoiding memory overflow.
 
     def threading(self):
-        # t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.image_thread_)
+        t1 = threading.Thread(target=self.tree_thread_)
+        t2 = threading.Thread(target=self.terrain_thread_())
 
-        # t1.start()
+        t1.start()
         t2.start()
 
-        # t1.join()
+        t1.join()
         t2.join()
 
     def tree_thread_(self):
@@ -295,7 +300,7 @@ class MultiShaders(Screen):
 
         try:
             self.world.world.draw(self.camera, self.light)
-            # self.forest.world.draw(self.camera, self.light)
+            self.forest.world.draw(self.camera, self.light)
         except:
             pass
 

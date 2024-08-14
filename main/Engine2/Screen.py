@@ -38,6 +38,7 @@ class Screen:
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, SCREEN_DEPTH_SIZE)  # GPU DEPTH BUFFER SIZE
         
         self.screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL, pygame.FULLSCREEN)
+
         pygame.display.set_caption(SCREEN_CAPTION_LOADING)
         self.clock = pygame.time.Clock()
         self.camera = None
