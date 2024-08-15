@@ -22,11 +22,12 @@ class MultiShaders(Screen):
 
     def __init__(self):
         print("---------------------------------------------------------------------")
+        print(BANNER)
+        print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
         if ESP:
             print("Starting Engine...")
         else:
             print("ESP (ENGINE_STATUS_PRINT) IS OFF!")
-        print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
 
         start = datetime.now()
         print("Starting at:" + str(start.now()))
@@ -41,11 +42,25 @@ class MultiShaders(Screen):
         camera info: z      (1 second interrupt)
         light control: l    (Pause, Grab, PLace, Continue) (0.3 second interrupt)
         memory info: m      (1 second interrupt)
+        live debugger: F3   (UNAVAILABLE V1.2.3-beta)
         builder mode: b     (0.3 second interrupt)
             - Change block: MouseRightClick
             - Place Block: MouseLeftClick
             - Distance: MouseScroll
         """)
+
+        if ESP:
+            print("---Begin of ENGINE_STATUS_PRINT (ESP) logs---")
+
+        # img
+        self.img_texture = r"Textures\texture.png"
+        self.img_atlas2 = r"Textures\OpenUniverseAtlas-1.png"
+        self.img_icu = r"Textures\ICU.png"
+        self.img_sun = r"Textures\sun.jpeg"
+        self.img_cactus = r"Textures\cactus.png"
+        self.image_matin = r"Images\matin_afzal.jpg"
+        self.image_monalisa = r"Images\mona_lisa.jpg"
+        self.image_dinner = r"Images\the_last_dinner.jpg"
 
         # Object Attach
         self.trees = None
@@ -64,7 +79,7 @@ class MultiShaders(Screen):
         self.seed = 0
 
         # Class init
-        self.culling_distance = DistanceCulling(distance=DCD)
+        # self.culling_distance = DistanceCulling(distance=DCD)
         # self.shematic = Shematic(1)
 
         # Switching draw types
@@ -82,16 +97,6 @@ class MultiShaders(Screen):
 
         # Builder mode
         self.b_counter = 0
-
-        # img
-        self.img_texture = r"Textures\texture.png"
-        self.img_atlas2 = r"Textures\OpenUniverseAtlas-1.png"
-        self.img_icu = r"Textures\ICU.png"
-        self.img_sun = r"Textures\sun.jpeg"
-        self.img_cactus = r"Textures\cactus.png"
-        self.image_matin = r"Images\matin_afzal.jpg"
-        self.image_monalisa = r"Images\mona_lisa.jpg"
-        self.image_dinner = r"Images\the_last_dinner.jpg"
 
         # Loads
         if ESP:
@@ -143,7 +148,7 @@ class MultiShaders(Screen):
             print("Cell Attach started at:" + str(cell_start.now()))
         self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
         self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
-        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)
+        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)  # IMAGE
 
         # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
         # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
@@ -164,9 +169,24 @@ class MultiShaders(Screen):
         # Locks
         self.object_creation_0 = False  # Avoiding memory overflow.
 
+        # Text
+        self.font = pygame.font.SysFont('arial', 30)
+        self.f3_counter = 0
+
+        # ManualBuilder
+        self.manual_lock = True  # False -> ON / True -> OFF
+        self.chunk_map = np.zeros(shape=(1000, 1000), dtype=np.uint8)
+        self.chunk_map[CAMERA_POSITION[0]][CAMERA_POSITION[2]] = 3
+        self.chunks = {}
+        self.camera_position = None
+        self.manual_gen = ManualChunkGen(texture=self.img_texture, material=self.mat)
+        self.distance_culling = DistanceCulling(distance=12, camera=self.camera)
+        camera_position = (int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3]))
+        self.manual_builder(camera_position)
+
     def threading(self):
         t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.terrain_thread_())
+        t2 = threading.Thread(target=self.terrain_thread_)
 
         t1.start()
         t2.start()
@@ -175,10 +195,10 @@ class MultiShaders(Screen):
         t2.join()
 
     def tree_thread_(self):
-        self.trees = ObjectAttach(object_name="tree", number_x=TREES, number_z=TREES)
+        self.trees = ObjectAttach(object_name="cactus", number_x=TREES, number_z=TREES)
 
     def terrain_thread_(self):
-        self.terrain = ObjectAttach(object_name="chunk", object_type="jungle", number_x=CHUNKS, number_z=CHUNKS)
+        self.terrain = ObjectAttach(object_name="chunk", object_type="desert", number_x=CHUNKS, number_z=CHUNKS)
 
     def superflat_thread_(self):
         self.terrain = ObjectAttach(object_name="chunk", object_type="superflat", number_x=CHUNKS, number_z=CHUNKS)
@@ -194,6 +214,41 @@ class MultiShaders(Screen):
                                           shader=self.mat)
         self.object_build_status = True
         self.object_grab = True
+
+    def manual_builder(self, camera_position: tuple):
+        for x in range(camera_position[0] - 30, camera_position[0] + 30, 8):
+            for z in range(camera_position[1] - 30, camera_position[1] + 30, 8):
+                if self.distance_culling.chunk_in_distance(self.camera, chunk_x=x, chunk_z=z, chunk_y=0):
+                    self.chunks[f"{x}.{0}.{z}"] = self.manual_gen.generate(x, z)
+                    self.chunk_map[x][z] = 1
+
+    # def manual_builder_re_accurate(self, unloaded_chunk, camera):
+    #     do_we_moved_8_blocks = self.distance_culling.camera_change_distance(camera)
+    #     if do_we_moved_8_blocks:
+    #         cam_x = camera.transformation[0, 3]
+    #         cam_y = camera.transformation[1, 3]
+    #         cam_z = camera.transformation[2, 3]
+    #         new_coordinates = self.distance_culling.find_new_coordinates(unloaded_chunk,
+    #                                                                      pygame.Vector3(cam_x, cam_y, cam_z))
+    #         new_id = f"{int(new_coordinates.x)}.{0}.{int(new_coordinates.z)}"
+    #         self.chunks[new_id] = self.manual_gen.generate(int(new_coordinates.x), int(new_coordinates.z))
+    #         print("CREATED", new_id)
+
+    def manual_builder_re_accurate(self, unloaded_chunk, camera):
+        do_we_moved_8_blocks = self.distance_culling.camera_change_distance(camera)
+        if do_we_moved_8_blocks:
+            for x in np.arange(start=int(camera.transformation[0, 3]) - 30, stop=int(camera.transformation[0, 3]) + 30,
+                               step=8):
+                for z in np.arange(start=int(camera.transformation[2, 3]) - 30, stop=int(camera.transformation[2, 3]) +
+                                                                                     30, step=8):
+                    if f"{x}.{0}.{z}" not in self.chunks:
+                        self.chunks[f"{x}.{0}.{z}"] = self.manual_gen.generate(x, z)
+
+    def draw_text(self, x, y, text):
+        text_surface = self.font.render(text, True, (255, 255, 66, 255), (0, 66, 0, 255))
+        text_data = pygame.image.tostring(text_surface, "RGBA", True)
+        glWindowPos2i(x, y)
+        glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
     def initialise(self):
         # Variables
@@ -218,7 +273,11 @@ class MultiShaders(Screen):
             glClearColor(self.red, self.green, self.blue, self.alpha)  # Sky night
         else:
             glClearColor(0.58, 0.85, 0.94, 0.5)  # Sky blue
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        if self.f3_counter == 1:
+            self.draw_text(0, SCREEN_HEIGHT - 100, "OpenUniverse")
 
         #####
         keys = pygame.key.get_pressed()
@@ -293,6 +352,18 @@ class MultiShaders(Screen):
 
             sleep(0.3)
 
+        if keys[pygame.K_F3]:
+            if self.f3_counter >= 1:
+                self.f3_counter = 0
+                if ESP:
+                    print("Debugger mode disabled...")
+            else:
+                self.f3_counter += 1
+                if ESP:
+                    print("Debugger mode enabled...")
+
+            sleep(0.3)
+
         # #####################RENDER#######################
         glPointSize(10)
         if self.x_counter == 0:
@@ -309,6 +380,22 @@ class MultiShaders(Screen):
                 build.object.draw(self.camera, self.light)
             except:
                 continue
+
+        if not self.manual_lock:
+            unloaded_dummy = None
+            for identity, chunk in self.chunks.copy().items():
+                distance_status = self.distance_culling.chunk_in_distance(self.camera, chunk)
+
+                if distance_status:
+                    chunk.draw(self.camera, self.light)
+
+                if not distance_status:
+                    current_identity = f"{int(chunk.chunk_center.x)}.{0}.{int(chunk.chunk_center.z)}"
+                    # print("DELETED", current_identity)
+                    unloaded_dummy = self.chunks[current_identity]
+                    self.manual_builder_re_accurate(unloaded_dummy, self.camera)
+                    del self.chunks[current_identity]
+                    # self.chunk_map[int(chunk.chunk_center.x)][int(chunk.chunk_center.z)] = 0
 
         self.cube0.draw(self.camera, self.light)
 
@@ -413,6 +500,8 @@ if __name__ == "__main__":
     MultiShaders().mainloop()
     if ESP:
         print("Mainloop Ends...")
+    if ESP:
+        print("---End of ENGINE_STATUS_PRINT (ESP) logs---")
     end = datetime.now()
     print("Ended at:" + str(end.now()))
     print("---------------------------------------------------------------------")

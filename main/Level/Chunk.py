@@ -1,5 +1,5 @@
-import threading
 import numpy as np
+import threading
 from Engine2.Utils import format_vertices
 from Engine2.Mesh import Mesh
 from Engine2.Settings2 import *
@@ -30,6 +30,7 @@ class Chunk(Mesh):
         self.position = position
         self.chunk_id = f"{self.position.x}:{self.position.y}:{self.position.z}:{self.biome}:{VERSION}"
         self.load_status = True
+        self.index_key = 0
         if material:
             self.shematic = np.round(shematic).astype(int)
         else:
@@ -66,18 +67,7 @@ class Chunk(Mesh):
             if ESP:
                 print("Biome not found!")
 
-        # t1 = threading.Thread(target=format_vertices, args=(self.vertices, self.triangles))
-        # t2 = threading.Thread(target=format_vertices, args=(uvs, uvs_ind))
-        # t3 = threading.Thread(target=format_vertices, args=(normals, normals_ind))
-        #
-        # t1.start()
-        # t2.start()
-        # t3.start()
-        #
-        # self.vertices = t1.join()
-        # self.vertex_uvs = t2.join()
-        # self.normals = t3.join()
-
+        # Linear processing (3 seconds in 30x30, Multiprocessing is 4 seconds)
         self.vertices = format_vertices(self.vertices, self.triangles)
         self.vertex_uvs = format_vertices(uvs, uvs_ind)
         self.normals = format_vertices(normals, normals_ind)
@@ -94,7 +84,8 @@ class Chunk(Mesh):
                 vertex_normals=self.normals,
                 vertex_uvs=self.vertex_uvs,
                 vertex_colors=self.colors,
-                material=self.material
+                material=self.material,
+                esp_off=True
             )
 
     def level_maker(self, center):
@@ -201,9 +192,6 @@ class Chunk(Mesh):
             "DIRT_Y": (2, 3, 0, 1)
         }
 
-        # for rendering full chunk use [for DEPTH in range(-13, int(self.shematic[COLUMN][ROW]) + 1):  # Y]
-        # for rendering only surface + 2 blocks deep use [temp = int(self.shematic[COLUMN][ROW]) + 1
-        #   for DEPTH in range(temp-2, temp):  # Y]
         for ROW in range(0, self.shematic_shape[0]):  # Z
             for COLUMN in range(0, self.shematic_shape[1]):  # X
                 if self.biome == "superflat":
@@ -216,6 +204,7 @@ class Chunk(Mesh):
                 else:  # Normal terrain
                     temp = int(self.shematic[COLUMN][ROW]) + 1
                     n_temp = temp - WORLD_DEPTH
+
                 for DEPTH in range(n_temp, temp):  # Y
                     self.blocks += 1
                     if DEPTH <= -5:
@@ -311,18 +300,10 @@ class Chunk(Mesh):
                     lock = True
 
                     if COLUMN == 7 or COLUMN == 0:
-                        # if ROW != 8 or ROW != 0:
-                        #     if self.shematic[COLUMN][ROW - 1] >= self.shematic[COLUMN][ROW]:
-                        #         n_front = True
-                        #     if self.shematic[COLUMN][ROW + 1] >= self.shematic[COLUMN][ROW]:
-                        #         n_back = True
+                        # TODO: Chunk edge
                         lock = False
                     if ROW == 7 or ROW == 0:
-                        # if COLUMN != 8 or COLUMN != 0:
-                        #     if self.shematic[COLUMN - 1][ROW] >= self.shematic[COLUMN][ROW]:
-                        #         n_left = True
-                        #     if self.shematic[COLUMN + 1][ROW] >= self.shematic[COLUMN][ROW]:
-                        #         n_right = True
+                        # TODO: Chunk edge
                         lock = False
                     if lock:
                         if temp-1 != DEPTH:
@@ -337,6 +318,9 @@ class Chunk(Mesh):
                             n_right = True
                         if self.shematic[COLUMN + 1][ROW] >= DEPTH:
                             n_left = True
+
+                    if n_front and n_back and n_left and n_right and n_top and n_bot:  # It's a hidden block
+                        continue
 
                     available_faces = [n_front, n_back, n_left, n_right, n_top, n_bot]
 
@@ -358,21 +342,6 @@ class Chunk(Mesh):
                     triangle = self.triangle_face_cull(available_faces, triangle_counter)
                     level_triangles.extend(triangle)
 
-                    # level_triangles.extend([
-                    #     0 + 8 * triangle_counter, 1 + 8 * triangle_counter, 2 + 8 * triangle_counter,  # TRIANGLE 1
-                    #     2 + 8 * triangle_counter, 1 + 8 * triangle_counter, 3 + 8 * triangle_counter,  # TRIANGLE 2
-                    #     4 + 8 * triangle_counter, 5 + 8 * triangle_counter, 6 + 8 * triangle_counter,  # TRIANGLE 3
-                    #     6 + 8 * triangle_counter, 5 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 4
-                    #     1 + 8 * triangle_counter, 5 + 8 * triangle_counter, 3 + 8 * triangle_counter,  # TRIANGLE 5
-                    #     3 + 8 * triangle_counter, 5 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 6
-                    #     0 + 8 * triangle_counter, 4 + 8 * triangle_counter, 2 + 8 * triangle_counter,  # TRIANGLE 7
-                    #     2 + 8 * triangle_counter, 4 + 8 * triangle_counter, 6 + 8 * triangle_counter,  # TRIANGLE 8
-                    #     4 + 8 * triangle_counter, 0 + 8 * triangle_counter, 5 + 8 * triangle_counter,  # TRIANGLE 9
-                    #     5 + 8 * triangle_counter, 0 + 8 * triangle_counter, 1 + 8 * triangle_counter,  # TRIANGLE 10
-                    #     6 + 8 * triangle_counter, 2 + 8 * triangle_counter, 7 + 8 * triangle_counter,  # TRIANGLE 11
-                    #     7 + 8 * triangle_counter, 2 + 8 * triangle_counter, 3 + 8 * triangle_counter  # TRIANGLE 12
-                    # ])
-
                     # UV vertices
                     if dirt:
                         self.update_uvs_face_dirt(_map)
@@ -386,21 +355,6 @@ class Chunk(Mesh):
                     uvs_ind = self.uvs_face_cull(available_faces, uv_counter)
                     level_uvs_ind.extend(uvs_ind)
 
-                    # level_uvs_ind.extend([
-                    #     20 + 24 * uv_counter, 21 + 24 * uv_counter, 22 + 24 * uv_counter,  # TRIANGLE 1
-                    #     22 + 24 * uv_counter, 21 + 24 * uv_counter, 23 + 24 * uv_counter,  # TRIANGLE 2
-                    #     4 + 24 * uv_counter, 5 + 24 * uv_counter, 6 + 24 * uv_counter,  # TRIANGLE 3
-                    #     6 + 24 * uv_counter, 5 + 24 * uv_counter, 7 + 24 * uv_counter,  # TRIANGLE 4
-                    #     8 + 24 * uv_counter, 9 + 24 * uv_counter, 10 + 24 * uv_counter,  # TRIANGLE 5
-                    #     10 + 24 * uv_counter, 9 + 24 * uv_counter, 11 + 24 * uv_counter,  # TRIANGLE 6
-                    #     16 + 24 * uv_counter, 17 + 24 * uv_counter, 18 + 24 * uv_counter,  # TRIANGLE 7
-                    #     18 + 24 * uv_counter, 17 + 24 * uv_counter, 19 + 24 * uv_counter,  # TRIANGLE 8
-                    #     0 + 24 * uv_counter, 1 + 24 * uv_counter, 2 + 24 * uv_counter,  # TRIANGLE 9
-                    #     2 + 24 * uv_counter, 1 + 24 * uv_counter, 3 + 24 * uv_counter,  # TRIANGLE 10
-                    #     12 + 24 * uv_counter, 13 + 24 * uv_counter, 14 + 24 * uv_counter,  # TRIANGLE 11
-                    #     14 + 24 * uv_counter, 13 + 24 * uv_counter, 15 + 24 * uv_counter  # TRIANGLE 12
-                    # ])
-
                     triangle_counter += 1
                     uv_counter += 1
                     dirt = False
@@ -411,21 +365,6 @@ class Chunk(Mesh):
 
                     normals_ind = self.normal_face_cull(available_faces, normal_counter)
                     level_normals_ind.extend(normals_ind)
-
-                    # level_normals_ind.extend([
-                    #     0 + 24 * normal_counter, 1 + 24 * normal_counter, 2 + 24 * normal_counter,
-                    #     2 + 24 * normal_counter, 1 + 24 * normal_counter, 3 + 24 * normal_counter,
-                    #     4 + 24 * normal_counter, 5 + 24 * normal_counter, 6 + 24 * normal_counter,
-                    #     6 + 24 * normal_counter, 5 + 24 * normal_counter, 7 + 24 * normal_counter,
-                    #     8 + 24 * normal_counter, 9 + 24 * normal_counter, 10 + 24 * normal_counter,  # F
-                    #     10 + 24 * normal_counter, 9 + 24 * normal_counter, 11 + 24 * normal_counter,  # F
-                    #     12 + 24 * normal_counter, 13 + 24 * normal_counter, 14 + 24 * normal_counter,  # B
-                    #     14 + 24 * normal_counter, 13 + 24 * normal_counter, 15 + 24 * normal_counter,  # B
-                    #     16 + 24 * normal_counter, 17 + 24 * normal_counter, 18 + 24 * normal_counter,  # L
-                    #     18 + 24 * normal_counter, 17 + 24 * normal_counter, 19 + 24 * normal_counter,  # L
-                    #     20 + 24 * normal_counter, 21 + 24 * normal_counter, 22 + 24 * normal_counter,  # R
-                    #     22 + 24 * normal_counter, 21 + 24 * normal_counter, 23 + 24 * normal_counter  # R
-                    # ])
 
                     normal_counter += 1
 
@@ -455,8 +394,8 @@ class Chunk(Mesh):
             (self.ONE / self.atlas_length * _map.get("DIRT_Y")[3], self.ONE / self.atlas_height * self.VM_F), (self.ONE / self.atlas_length * _map.get("DIRT_Y")[2], self.ONE / self.atlas_height * self.VM_L), (self.ONE / self.atlas_length * _map.get("DIRT_Y")[3], self.ONE / self.atlas_height * self.VM_L)  # +Y / H -Z
         ]
 
-    # @staticmethod
-    def triangle_face_cull(self, available_faces: list, triangle_counter: int):
+    @staticmethod
+    def triangle_face_cull(available_faces: list, triangle_counter: int):
         """
         front, back, right, left
         """
@@ -496,7 +435,8 @@ class Chunk(Mesh):
 
         return temp
 
-    def uvs_face_cull(self, available_faces: list, uv_counter: int):
+    @staticmethod
+    def uvs_face_cull(available_faces: list, uv_counter: int):
         temp = []
 
         if not available_faces[4]:  # top face triangles
@@ -532,7 +472,8 @@ class Chunk(Mesh):
 
         return temp
 
-    def normal_face_cull(self, available_faces: list, normal_counter: int):
+    @staticmethod
+    def normal_face_cull(available_faces: list, normal_counter: int):
         temp = []
 
         if not available_faces[4]:  # top face triangles

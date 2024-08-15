@@ -27,6 +27,7 @@ class CellAttach:
         self.colors = []
         self.call_time = 0
 
+        # Multiprocessing (6 seconds in 30x30)
         t1 = threading.Thread(target=self.attach_vertices)
         t2 = threading.Thread(target=self.attach_uvs)
         t3 = threading.Thread(target=self.attach_normals)
@@ -39,10 +40,12 @@ class CellAttach:
         t2.join()
         t3.join()
 
-        # self.attach_vertices(self.cells)
-        # self.attach_uvs(self.cells)
-        # self.attach_normals(self.cells)
-        self.load_world()
+        # Linear processing  (12 seconds in 30x30)
+        # self.attach_vertices()
+        # self.attach_uvs()
+        # self.attach_normals()
+
+        self.load_world()  # IMPORTANT!
 
     def attach_vertices(self):
         cells = self.cells

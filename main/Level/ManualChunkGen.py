@@ -23,9 +23,7 @@ class ManualChunkGen:
         self.material = material
         self.shematic = Shematic()
 
-    def generate(self, x: int = 0, z: int = 0):
-
-        # TODO (INLINE SHEMATIC GENERATOR) -> MAKING WORLD REALLY INFINITE!
+    def generate(self, x: int = 0, z: int = 0, i: int = 0):
         # main_x = x
         # main_z = z
         # shematic = np.zeros(shape=(8, 8))
@@ -41,8 +39,6 @@ class ManualChunkGen:
         chunk = Chunk(biome="jungle", position=Vector3(x, 0, z), shematic=shematic, img=self.texture,
                       material=self.material)
 
-        return chunk
+        chunk.index_key = i
 
-# if __name__ == "__main__":
-#     t = ManualChunkGen()
-#     t.generate(10, 10)
+        return chunk

@@ -5,21 +5,55 @@ from Engine2.Settings2 import *
 
 
 class DistanceCulling:
-    def __init__(self, distance=13) -> None:
+    def __init__(self, distance=13, camera=None) -> None:
         self.block_distance = distance
         self.chunk_distance = self.block_distance * 8
         self.maximum_distance = 14
         self.player_location = [0, 0]
+        self.camera = camera
+        self.camera_init_pos = pygame.Vector3(int(self.camera.transformation[0, 3]),
+                                              int(self.camera.transformation[1, 3]),
+                                              int(self.camera.transformation[2, 3]))
 
-    def chunk_in_distance(self, camera, object):
+        self.camera_change_val = self.camera_init_pos.copy()
+
+    def chunk_in_distance(self, camera, chunk=None, chunk_x=None, chunk_z=None, chunk_y=None):
         x = camera.transformation[0, 3]
         y = camera.transformation[1, 3]
         z = camera.transformation[2, 3]
-        d = sqrt(((x - object.chunk_center.x)**2) + ((y - object.chunk_center.y)**2) + ((z - object.chunk_center.z)**2))
+
+        if chunk:
+            d = sqrt(((x - chunk.chunk_center.x)**2) + ((y - chunk.chunk_center.y)**2) +
+                     ((z - chunk.chunk_center.z)**2))
+        elif None not in (chunk_x, chunk_z, chunk_y):
+            d = sqrt(((x - chunk_x)**2) + ((y - chunk_y)**2) +
+                     ((z - chunk_z)**2))
+        else:
+            if ESP:
+                print("Distance Culling Error: chunk_in_distance object is None!")
+            return 0
 
         if d > self.chunk_distance:
             return False
         return True
+
+    def camera_change_distance(self, camera, distance=8):
+        x = int(camera.transformation[0, 3])
+        y = int(camera.transformation[1, 3])
+        z = int(camera.transformation[2, 3])
+
+        d = abs(sqrt(((x - self.camera_change_val.x) ** 2) + ((y - self.camera_change_val.y) ** 2) +
+                     ((z - self.camera_change_val.z) ** 2)))
+
+        if d > distance:
+            self.camera_change_val = pygame.Vector3(x, y, z)
+            return True
+        return False
+
+    def find_new_coordinates(self, unloaded_chunk, new_camera):
+        moved_direction = self.direction_calculator(self.camera_init_pos, new_camera)
+        new_coord = self.coordinates_calculator(unloaded_chunk, moved_direction)
+        return new_coord
         
     def direction_calculator(self, A, B):
         """ calculating movement direction.
@@ -34,8 +68,8 @@ class DistanceCulling:
         """
         try:
             vector = A - B
-            # direction_vector = vector.normalize()
-            direction_vector = vector
+            direction_vector = vector.normalize()
+            # direction_vector = vector
             direction = None
 
             # N
@@ -78,7 +112,7 @@ class DistanceCulling:
                 print(Error)
 
     def coordinates_calculator(self, unloaded_chunk, direction):
-        """ calculating the cordinates of new chunk.
+        """ calculating the coordinates of new chunk.
 
         Args:
             direction (str): player new direction
@@ -100,43 +134,75 @@ class DistanceCulling:
         x = None
         z = None
         coordinates = None
+        # if direction == "N":
+        #     x = unloaded_chunk.chunk_center.x
+        #     z = unloaded_chunk.chunk_center.z - self.chunk_distance - 1
+        #
+        # elif direction == "S":
+        #     x = unloaded_chunk.chunk_center.x
+        #     z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
+        #
+        # elif direction == "E":
+        #     x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
+        #     z = unloaded_chunk.chunk_center.z
+        #
+        # elif direction == "W":
+        #     x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
+        #     z = unloaded_chunk.chunk_center.z
+        #
+        # elif direction == "NE":
+        #     x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
+        #     z = unloaded_chunk.chunk_center.z - self.chunk_distance + 1
+        #
+        # elif direction == "NW":
+        #     x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
+        #     z = unloaded_chunk.chunk_center.z - self.chunk_distance - 1
+        #
+        # elif direction == "SE":
+        #     x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
+        #     z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
+        #
+        # elif direction == "SW":
+        #     x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
+        #     z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
         if direction == "N":
             x = unloaded_chunk.chunk_center.x
-            z = unloaded_chunk.chunk_center.z - self.chunk_distance - 1
+            z = unloaded_chunk.chunk_center.z + self.chunk_distance
 
         elif direction == "S":
             x = unloaded_chunk.chunk_center.x
-            z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
+            z = unloaded_chunk.chunk_center.z - self.chunk_distance
 
         elif direction == "E":
-            x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
+            x = unloaded_chunk.chunk_center.x - self.chunk_distance
             z = unloaded_chunk.chunk_center.z
 
         elif direction == "W":
-            x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
+            x = unloaded_chunk.chunk_center.x + self.chunk_distance
             z = unloaded_chunk.chunk_center.z
 
         elif direction == "NE":
-            x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
-            z = unloaded_chunk.chunk_center.z - self.chunk_distance + 1
+            x = unloaded_chunk.chunk_center.x - self.chunk_distance
+            z = unloaded_chunk.chunk_center.z + self.chunk_distance
 
         elif direction == "NW":
-            x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
-            z = unloaded_chunk.chunk_center.z - self.chunk_distance - 1
+            x = unloaded_chunk.chunk_center.x + self.chunk_distance
+            z = unloaded_chunk.chunk_center.z + self.chunk_distance
 
         elif direction == "SE":
-            x = unloaded_chunk.chunk_center.x + self.chunk_distance + 1
-            z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
+            x = unloaded_chunk.chunk_center.x - self.chunk_distance
+            z = unloaded_chunk.chunk_center.z - self.chunk_distance
 
         elif direction == "SW":
-            x = unloaded_chunk.chunk_center.x - self.chunk_distance - 1
-            z = unloaded_chunk.chunk_center.z + self.chunk_distance + 1
+            x = unloaded_chunk.chunk_center.x + self.chunk_distance
+            z = unloaded_chunk.chunk_center.z - self.chunk_distance
 
         else:
             coordinates = pygame.Vector3(0, 30, 0)
 
         if x and z:
             coordinates = pygame.Vector3(x, 0, z)
+
         return coordinates
 
 # if __name__ == "__main__":

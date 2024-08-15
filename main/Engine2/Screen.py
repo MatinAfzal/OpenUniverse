@@ -2,6 +2,7 @@
 import os
 import time
 import pygame
+from pygame.locals import *
 from time import sleep
 from pygame.locals import *
 from .Camera import *
