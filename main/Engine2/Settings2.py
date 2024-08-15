@@ -1,7 +1,7 @@
 from OpenGL.GL import GL_LINES
 
 # OpenUniverse
-VERSION = "1.9.7-beta"
+VERSION = "1.9.8-beta"
 CHUNKS = 20
 TREES = 20
 BANNER = f"""
