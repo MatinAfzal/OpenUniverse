@@ -62,6 +62,7 @@ class MultiShaders(Screen):
         self.image_monalisa = r"Images\mona_lisa.jpg"
         self.image_dinner = r"Images\the_last_dinner.jpg"
 
+        # Attaching objects before super initial to avoid screen crashes
         # Object Attach
         self.trees = None
         self.terrain = None
@@ -133,8 +134,6 @@ class MultiShaders(Screen):
             location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
         self.start_time = int(time())
 
-        # Attaching objects before super initial to avoid screen crashes
-
         # Object Attach
         # self.trees = None
         # self.terrain = None
@@ -146,11 +145,10 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)
-        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)
+        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_texture)  # TREE
+        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_texture)  # TERRAIN
         # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)  # IMAGE
-
-        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)
+        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)  # CACTUS
         # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
 
         # Sky variables
