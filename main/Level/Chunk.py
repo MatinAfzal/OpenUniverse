@@ -19,9 +19,17 @@ class Chunk(Mesh):
             shematic (np.array): chunk generation sample
             img (path): texture
             material (): if material -> for loop gen
+
+        info:
+            jungle: texture
+            desert: texture
+            snow: texture
+            superflat: texture
+            image: atlas 2
+            dirty: atlas 1
         """
 
-        self.known_biomes = ["jungle", "desert", "snow", "superflat", "image"]
+        self.known_biomes = ["jungle", "desert", "snow", "superflat", "image", "dirty"]
         self.biome = biome
         self.chunk_center = position  # for distance culling
         self.level_name = "chunk"
@@ -223,6 +231,11 @@ class Chunk(Mesh):
                             self.HM_L = 16
                             self.VM_F = 15
                             self.VM_L = 16
+                        elif self.biome == "dirty": # dirty dirt
+                            self.HM_F = 3
+                            self.HM_L = 4
+                            self.VM_F = 6
+                            self.VM_L = 7
                     elif -4 <= DEPTH < 0:
                         if self.biome == "jungle":  # Jungle dirt
                             # dirt = True
@@ -281,6 +294,11 @@ class Chunk(Mesh):
                             self.HM_L = 4
                             self.VM_F = 12
                             self.VM_L = 13
+                        elif self.biome == "dirty":  # dirty grass
+                            self.HM_F = 1
+                            self.HM_L = 2
+                            self.VM_F = 10
+                            self.VM_L = 11
                     elif DEPTH >= 15:
                         if self.biome == "jungle":  # Jungle snow
                             self.HM_F = 0

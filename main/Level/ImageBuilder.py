@@ -9,6 +9,6 @@ class ImageBuilder:
         """
 
         img = Image.open(image_path).convert('L')  # L to grayscale, 1 to black and white
-        # img = img.resize((9600, 4800))
+        img = img.resize((320, 320))
         img_array = np.array(img.getdata(), dtype=np.uint8)
         self.img_array = np.reshape(img_array, newshape=(320, 320))

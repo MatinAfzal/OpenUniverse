@@ -18,5 +18,6 @@ time,test_sample,test_method,test_runtime,node_name,cpu_name,gpu_name,cpu_cores,
 ,,,,,,,,,,,,,,,,,,,
 2024-08-13,2.0,manual,60.0,Matin,Intel64,NVIDIA GeForce RTX 4060,20.0,8188.0MB,46.0 °C,Windows,10.0,10.8,11.0,"svmem(total=34163957760, available=20925087744, percent=38.8, used=13238870016, free=20925087744)",753.0,8.0,60.0,62.0,Face culling test (after)!
 2024-08-13,Custom,manual,60.0,Matin,Intel64,NVIDIA GeForce RTX 4060,20.0,8188.0MB,44.0 °C,Windows,10.0,15.7,1.6,"svmem(total=34163957760, available=21204799488, percent=37.9, used=12959158272, free=21204799488)",862.0,8.0,60.0,62.0,Before face culling terrain test!
-2024-08-13,Custom,manual,60.0,Matin,Intel64,NVIDIA GeForce RTX 4060,20.0,8188.0MB,46.0 °C,Windows,10,4.6,10.9,"svmem(total=34163957760, available=21778325504, percent=36.3, used=12385632256, free=21778325504)",987.0,8.0,61.0,62.0,Before face culling terrain test!
-,,,,,,,,,,,,,,,,,
+2024-08-13,Custom,manual,60.0,Matin,Intel64,NVIDIA GeForce RTX 4060,20.0,8188.0MB,46.0 °C,Windows,10.0,4.6,10.9,"svmem(total=34163957760, available=21778325504, percent=36.3, used=12385632256, free=21778325504)",987.0,8.0,61.0,62.0,Before face culling terrain test!
+,,,,,,,,,,,,,,,,,,,
+2024-08-16,Custom,manual,60.0,Matin,Intel64,NVIDIA GeForce RTX 4060,20.0,8188.0MB,47.0 °C,Windows,11,12.5,12.5,"svmem(total=34163957760, available=22616092672, percent=33.8, used=11547865088, free=22616092672)",2193.0,8.0,61.0,62.0,

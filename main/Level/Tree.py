@@ -104,12 +104,20 @@ class Tree:
             center_y += 1
             
             # Texture atlas locations
+            # atlas_length = 16
+            # atlas_height = 16
+            # HM_F = 0  # Horizontal Multiplier to first border
+            # HM_L = 1  # Horizontal Multiplier to last border
+            # VM_F = 8  # Vertical Multiplier to first border
+            # VM_L = 9  # Vertical Multiplier to last border
+            # BD = 0.0000000099  # border_deficiency
+            # ONE = 1 + BD
             atlas_length = 16
             atlas_height = 16
             HM_F = 0  # Horizontal Multiplier to first border
             HM_L = 1  # Horizontal Multiplier to last border
-            VM_F = 8  # Vertical Multiplier to first border
-            VM_L = 9  # Vertical Multiplier to last border
+            VM_F = 1  # Vertical Multiplier to first border
+            VM_L = 2  # Vertical Multiplier to last border
             BD = 0.0000000099  # border_deficiency
             ONE = 1 + BD
             
@@ -242,12 +250,20 @@ class Tree:
                 separator += 1
 
                 # Texture atlas locations
+                # atlas_length = 16
+                # atlas_height = 16
+                # HM_F = 10  # Horizontal Multiplier to first border
+                # HM_L = 11  # Horizontal Multiplier to last border
+                # VM_F = 15  # Vertical Multiplier to first border
+                # VM_L = 16  # Vertical Multiplier to last border
+                # BD = 0.0000000099  # border_deficiency
+                # ONE = 1 + BD
                 atlas_length = 16
                 atlas_height = 16
-                HM_F = 10  # Horizontal Multiplier to first border
-                HM_L = 11  # Horizontal Multiplier to last border
-                VM_F = 15  # Vertical Multiplier to first border
-                VM_L = 16  # Vertical Multiplier to last border
+                HM_F = 0  # Horizontal Multiplier to first border
+                HM_L = 1  # Horizontal Multiplier to last border
+                VM_F = 3  # Vertical Multiplier to first border
+                VM_L = 4  # Vertical Multiplier to last border
                 BD = 0.0000000099  # border_deficiency
                 ONE = 1 + BD
 
