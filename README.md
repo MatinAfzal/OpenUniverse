@@ -35,7 +35,7 @@ You can find more information about FA-Engine [HERE](https://www.youtube.com/wat
 ---
 
 ### 2. Download
-You can download the latest released version of the project from here [V1.2.3-beta](https://github.com/MatinAfzal/OpenUniverse/releases/tag/v1.2.3-beta), or visit here to see the list of [all released versions](https://github.com/MatinAfzal/OpenUniverse/releases).
+You can download the latest released version of the project from here [V1.8..8-beta](https://github.com/MatinAfzal/OpenUniverse/releases/tag/v1.8.8-beta), or visit here to see the list of [all released versions](https://github.com/MatinAfzal/OpenUniverse/releases).
 
 You can also clone this repository with the following command:
 ```
