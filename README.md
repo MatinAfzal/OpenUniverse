@@ -4,75 +4,83 @@
   <img src="https://github.com/user-attachments/assets/3b0bd91b-df43-4d27-880f-358973489fd0" />
 </p>
 
-<h3 align="center">An open source implementation of 3D Computer Universe</h3>
+<h3 align="center">An Open Source Implementation of a 3D Computer Universe</h3>
 
 ---
-# Contents
-- 1 - [Introduction](#1-introduction)
-- 2 - [Downloading](#2-download)
-- 3 - [Run the Universe](#3-run-the-universe)
-- 4 - [Contributing](#4-contributing)
-- 6 - [Video Documentary](#5-video-documentary)
+
+## Contents
+- [1. Introduction](#1-introduction)
+- [2. Downloading](#2-download)
+- [3. Running the Universe](#3-running-the-universe)
+- [4. Contributing](#4-contributing)
+- [5. Video Documentary](#5-video-documentary)
 
 ---
 
 ### 1. Introduction
-A computer world made of voxels, this project is a suitable space for learning and working together, let's help each other to make this project better and more efficient.
+OpenUniverse is a voxel-based computer world designed for collaboration and learning. This project offers a unique opportunity to explore programming concepts, optimize performance, and contribute to an open-source community.
 
-Although Python is a higher-level language than CPP and Rust and has a lower speed than the two compiler languages ​​mentioned, this project is implemented on Python for three reasons:
+While Python may not match the speed of C++ or Rust, we chose it for three key reasons:
 
-1. Implementing this project with Python is a more difficult task and requires more optimizations, because Python has a lower speed, and this project needs optimizations to run on Python, which normally are not needed on many other languages, although implementing these optimizations is a difficult and time-consuming task, the depth of learning and gaining new experiences lies in these optimizations, all these implementation difficulties on Python They work hand in hand to make fewer programmers implement similar projects with Python, in other words, the number of similar projects implemented with Python is less than other languages.
+1. **Challenging Optimization**: Implementing this project in Python presents unique optimization challenges that foster deeper learning experiences. Fewer programmers undertake similar projects in Python, making this an invaluable opportunity for growth.
+  
+2. **Enhanced Readability**: Python's readability makes it accessible for newcomers to programming. Projects like OpenUniverse can guide aspiring developers through complex concepts in a more digestible format.
 
-2. Python has a higher readability and this makes many computer and programming enthusiasts choose Python as the gateway to this world, the existence of such projects can help a large circle of programmers to learn more things.
+3. **Philosophy of Programming**: The primary focus should be on understanding programming philosophy rather than just mastering a specific language. Engaging with this project encourages a broader perspective on engineering and design principles.
 
-3. Outside of different languages, the biggest lesson that anyone should learn in their learning path is the philosophy of programming and not learning a specific language, the existence of such projects can help a programmer to learn beyond the speed and capabilities. A programmer should look at the engineering and mechanisms built and have a better understanding of the programming philosophy.
-
-Any programmer can use the codes in this project to build his own world or help improve OpenUniverse.
-
-This project uses an internal engine called FAE, which was built from scratch specifically for OpenUniverse.
-You can find more information about FA-Engine [HERE](https://www.youtube.com/watch?v=u1sz5jymhfI).
+Any programmer can use the code within this project to build their own worlds or contribute to enhancing OpenUniverse. This project utilizes an internal engine called **FAE**, built from scratch specifically for OpenUniverse. More information about FA-Engine can be found [here](https://github.com/MatinAfzal/FloatArtsEngine).
 
 ---
 
 ### 2. Download
-You can download the latest released version of the project from here [V1.8.8-beta](https://github.com/MatinAfzal/OpenUniverse/releases/tag/v1.8.8-beta), or visit here to see the list of [all released versions](https://github.com/MatinAfzal/OpenUniverse/releases).
+You can download the latest released version of the project [here](https://github.com/MatinAfzal/OpenUniverse/releases/tag/v1.8.8-beta), or view all released versions [here](https://github.com/MatinAfzal/OpenUniverse/releases).
 
-You can also clone this repository with the following command:
-```
+To clone the repository, use the following command:
+```bash
 git clone https://github.com/MatinAfzal/OpenUniverse
 ```
 
-Or if you want to have the latest source code under development, you can use the [beta](https://github.com/MatinAfzal/OpenUniverse/tree/beta) branch and clone it with the following command:
-```
+To access the latest development code, clone the **beta** branch with:
+```bash
 git clone -b beta https://github.com/MatinAfzal/OpenUniverse
 ```
 
 ---
 
-### 3. Run the Universe
-To run Universe, you must install the necessary files using the following command:
-```
+### 3. Running the Universe
+To run OpenUniverse, install the necessary dependencies with:
+```bash
 pip install -r /path/to/OpenUniverse/requirements.txt
 ```
-Then you can use the Python interpreter to run the world with the following command:
-```
+Then, execute the main program using:
+```bash
 python /path/to/OpenUniverse/main/OpenUniverse.py
 ```
 
 ---
 
 ### 4. Contributing
-To contribute to the project, you must register your changes (features - optimization - improvements - bug fixes) for the [beta](https://github.com/MatinAfzal/OpenUniverse/tree/beta) branch. This branch contains the latest changes under development and in other words, pull requests should be given for this branch.
+Contributions are welcome! Please submit your changes (features, optimizations, improvements, bug fixes) to the [beta](https://github.com/MatinAfzal/OpenUniverse/tree/beta) branch.
 
-- All pull requests must contain a complete comment of all the changes, and after review and approval, they will be added to the beta.
-- After the beta version is stabilized, after passing the relevant beta tests, it will be merged with the new tag version to the main branch.
-- Also, all participants are invited to join my [Discord server](https://discord.com/invite/tx7BpNzD7t). All the efforts of this community will be to make this server a suitable space for collaboration and programming.
-You can also contact the following email if needed: contact.matin@yahoo.com
+- Include a comprehensive description of all changes in your pull request.
+- After review and approval, your contributions will be merged into the beta branch.
+- Once stabilized, the beta version will be merged into the main branch with a new tag.
+
+We invite you to join my [Discord server](https://discord.com/invite/tx7BpNzD7t) for collaboration and discussion. For further inquiries, you can contact me at: [contact.matin@yahoo.com](mailto:contact.matin@yahoo.com).
 
 ---
+
 ### 5. Video Documentary
-You can see the video documentary of the project on YouTube!
+Check out the video documentary series for OpenUniverse on YouTube! Each episode covers different aspects of the project, from engine creation to ongoing improvements.
 
-- [Episode 1](https://www.youtube.com/watch?v=u1sz5jymhfI)
+- **[Episode 1: Creating the Engine from Scratch](https://www.youtube.com/watch?v=u1sz5jymhfI)**  
+  Dive into the development of the internal engine, FAE, and learn how it powers OpenUniverse.
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/80d340bf-94b9-4515-8e91-b43c219624f1" alt="Episode 1 Thumbnail" width="300"/>
+  </p>
 
-![2](https://github.com/user-attachments/assets/80d340bf-94b9-4515-8e91-b43c219624f1)
+- **[Episode 2: Enhancements and Improvements](https://www.youtube.com/watch?v=u1sz5jymhfI)**  
+  Explore the recent improvements made to the project and how they enhance performance and usability.
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/3014b41e-b849-46c2-9aa9-5be5bcdbe692" alt="Episode 2 Thumbnail" width="300"/>
+  </p>
