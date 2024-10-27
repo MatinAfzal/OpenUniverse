@@ -4,7 +4,25 @@ from .Settings2 import *
 
 
 class Texture:
+    """
+    Represents a 2D texture loaded from an image file for use in OpenGL rendering.
+
+    Attributes:
+        surface (pygame.Surface): The surface object containing the loaded image.
+        texture_id (int): The OpenGL ID for the generated texture.
+
+    Methods:
+        load(): Loads the texture data into OpenGL and sets the texture parameters.
+    """
     def __init__(self, filename=None, esp_off=False):
+        """
+        Initializes the Texture object.
+
+        Parameters:
+            filename (str): The path to the image file to be loaded as a texture.
+                            If None, the texture will not be loaded.
+            esp_off (bool): If True, suppresses the loading message for debugging.
+        """
         if ESP and not esp_off:
             print("Loading Textures...")
         self.surface = None
@@ -14,6 +32,7 @@ class Texture:
             self.load()
 
     def load(self):
+        """Loads the texture data into OpenGL and sets the texture parameters."""
         width = self.surface.get_width()
         height = self.surface.get_height()
 

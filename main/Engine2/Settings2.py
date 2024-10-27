@@ -1,9 +1,13 @@
+# OpenUniverse Configuration Settings
 from OpenGL.GL import GL_LINES
-
-# OpenUniverse
+# Version of the engine
 VERSION = "1.8.8-beta"
-CHUNKS = 30
-TREES = 30
+
+# World generation parameters
+CHUNKS = 40          # Number of chunks to load in the game world
+TREES = 40           # Number of trees to generate in the game world
+
+# ASCII art banner for the engine
 BANNER = f"""
      ___ ___ ___
    /___/___/___/|
@@ -18,90 +22,79 @@ BANNER = f"""
     OpenUniverse V{VERSION}
 """
 
-# Debug settings
+# Debug settings to control logging and error reporting
 ENGINE_STATUS_PRINT = True
-ENGINE_STATUS_PRINT_VERY_VERBOSE = False  # Very Verbose, Print Errors and etc.
-ENGINE_REPORT_SAVE = False
-ENGINE_REPORT_TIME_BASED = False
+ENGINE_STATUS_PRINT_VERY_VERBOSE = False  # Detailed logging for debugging
+ENGINE_REPORT_SAVE = False                  # Save error reports to a file
+ENGINE_REPORT_TIME_BASED = False            # Enable time-based reporting
 
-# Report settings
-ESP = ENGINE_STATUS_PRINT
-ERT_B = ENGINE_REPORT_TIME_BASED
-ESP_VV = ENGINE_STATUS_PRINT_VERY_VERBOSE
+# Report settings for easier access
+ESP = ENGINE_STATUS_PRINT                    # Alias for status printing
+ERT_B = ENGINE_REPORT_TIME_BASED             # Alias for time-based reporting
+ESP_VV = ENGINE_STATUS_PRINT_VERY_VERBOSE    # Alias for verbose logging
 
-# TestSite settings
-TEST_SITE_STATUS = False
-TEST_SITE_COMMENT = ""
+# Test site configuration
+TEST_SITE_STATUS = True                      # Enable or disable test site features
+TEST_SITE_COMMENT = ""                       # Comments regarding the test site
+TSS = TEST_SITE_STATUS                       # Alias for test site status
 
-TSS = TEST_SITE_STATUS
+# Culling settings for performance optimization
+DISTANCE_CULLING = True                      # Enable distance-based culling
+DISTANCE_CULLING_DISTANCE = 15               # Max distance for culling objects
+CHUNK_GENERATION_WIDE = 50                   # Width for chunk generation
+PRO_GAP = 100                                 # Gap between generated chunks
 
-# Culling Settings
-DISTANCE_CULLING = True
-DISTANCE_CULLING_DISTANCE = 15
-CHUNK_GENERATION_WIDE = 50
-PRO_GAP = 100
+# Sky settings for environmental effects
+SKY_DYNAMIC = False                           # Enable dynamic sky effects
+SUN_STATUS = True                             # Enable sun in the sky
+SKY_SPEED = 0.000062                          # Speed of sky movement
+SUN_SPEED_Y = 0.018                           # Vertical speed of the sun
+SUN_SPEED_X = 0.018                           # Horizontal speed of the sun
 
-CGW = CHUNK_GENERATION_WIDE
-DCD = DISTANCE_CULLING_DISTANCE
-
-# Sky settings
-SKY_DYNAMIC = False
-SUN_STATUS = True
-SKY_SPEED = 0.000062
-# SUN_SPEED_Y = 0.008
-# SUN_SPEED_X = 0.038
-SUN_SPEED_Y = 0.018
-SUN_SPEED_X = 0.018
-
+# Light source initial position
 INITIAL_LIGHT_POS_X = -80
 INITIAL_LIGHT_POS_Z = (CHUNKS * 8) / 2
 INITIAL_LIGHT_POS_Y = -60
 
-# World settings
-WORLD_DEPTH = 3
-WORLD_BORDER = 500  # blocks
-WORLD_COLOR_R = 0.5
-WORLD_COLOR_G = 0.5
-WORLD_COLOR_B = 0.5
-WORLD_COLOR_A = 0.5
+# World settings for visual aspects
+WORLD_DEPTH = 3                               # Depth of the game world
+WORLD_BORDER = 500                            # Border size for the world in blocks
+WORLD_COLOR_R = 0.5                           # Red component of world color
+WORLD_COLOR_G = 0.5                           # Green component of world color
+WORLD_COLOR_B = 0.5                           # Blue component of world color
+WORLD_COLOR_A = 0.5                           # Alpha component of world color
 
-# World axes settings
+# Settings for world axes visualization
 WORLD_AXES_VERTICES = [[-100, 0, 0], [100, 0, 0], [0, -100, 0], [0, 100, 0], [0, 0, -100], [0, 0, 100]]
 WORLD_AXES_COLORS = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]]
-WORLD_AXES_DRAWTYPE = GL_LINES
+WORLD_AXES_DRAWTYPE = GL_LINES               # OpenGL draw type for axes
 
-# Chunk settings
-CHUNK_COLOR_R = 1
-CHUNK_COLOR_G = 1
-CHUNK_COLOR_B = 1
+# Chunk color settings
+CHUNK_COLOR_R = 1                             # Red component of chunk color
+CHUNK_COLOR_G = 1                             # Green component of chunk color
+CHUNK_COLOR_B = 1                             # Blue component of chunk color
 
-# Camera settings
-CAMERA_POSITION = (100, 0, 100)  # > 50 not allowed!
-CAMERA_MOUSE_SENSITIVITY_X = 0.1
-CAMERA_MOUSE_SENSITIVITY_Y = 0.1
-CAMERA_MOVE_SENSITIVITY = 0.31
-# CAMERA_MOVE_SENSITIVITY = 0.002
-CAMERA_VIEW_ANGLE = 60
-CAMERA_NEAR_PLANE = 0.01
-CAMERA_FAR_PLANE = 10000
-CAMERA_ROTATE_YAW_LOCAL = True
-CAMERA_ROTATE_PITCH_LOCAL = True
-CAMERA_ROTATE_PITCHUP_MAX = 170.0
-# CAMERA_ROTATE_PITCHDOWN_MAX = 30
-CAMERA_ROTATE_PITCHDOWN_MAX = -170.0
+# Camera settings for controlling the view
+CAMERA_POSITION = (0, 0, 0)                   # Initial camera position
+CAMERA_MOUSE_SENSITIVITY_X = 0.1              # Mouse sensitivity for horizontal movement
+CAMERA_MOUSE_SENSITIVITY_Y = 0.1              # Mouse sensitivity for vertical movement
+CAMERA_MOVE_SENSITIVITY = 0.001               # Sensitivity for camera movement
+CAMERA_VIEW_ANGLE = 60                        # Camera field of view angle
+CAMERA_NEAR_PLANE = 0.01                      # Near clipping plane distance
+CAMERA_FAR_PLANE = 10000                      # Far clipping plane distance
+CAMERA_ROTATE_YAW_LOCAL = True                # Enable local yaw rotation
+CAMERA_ROTATE_PITCH_LOCAL = True              # Enable local pitch rotation
+CAMERA_ROTATE_PITCHUP_MAX = 170.0             # Max pitch-up angle
+CAMERA_ROTATE_PITCHDOWN_MAX = -170.0          # Max pitch-down angle
 
-# Screen settings
-# SCREEN_POS_X = 850
-# SCREEN_POS_Y = 200
-SCREEN_POS_X = 100
-SCREEN_POS_Y = 30
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
-# SCREEN_WIDTH = 1800
-# SCREEN_HEIGHT = 1000
-SCREEN_MULTISAMPLEBUFFERS = 1
-SCREEN_MULTISAMPLESAMPLES = 4
-SCREEN_DEPTH_SIZE = 24
-SCREEN_CAPTION_LOADING = "Loading..."
-SCREEN_CAPTION = f"OpenUniverse V [V ANY] from [{VERSION}]"
-SCREEN_MAX_FPS = 60
+# Screen settings for display properties
+SCREEN_POS_X = 100                            # X position of the screen window
+SCREEN_POS_Y = 30                             # Y position of the screen window
+SCREEN_WIDTH = 1920                           # Width of the screen
+SCREEN_HEIGHT = 1080                          # Height of the screen
+SCREEN_MULTISAMPLEBUFFERS = 1                 # Number of multisample buffers for anti-aliasing
+SCREEN_MULTISAMPLESAMPLES = 4                  # Samples per pixel for anti-aliasing
+SCREEN_DEPTH_SIZE = 24                        # Depth buffer size
+SCREEN_CAPTION_LOADING = "Loading..."         # Caption for loading screen
+SCREEN_CAPTION = f"OpenUniverse V [V ANY] from [{VERSION}]"  # Main screen caption
+SCREEN_MAX_FPS = 320                         # Maximum frames per second for the game loop

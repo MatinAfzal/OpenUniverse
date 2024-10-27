@@ -7,10 +7,59 @@ from .Settings2 import *
 
 class Mesh:
     """
-    Mesh Loader
+    Mesh Loader for 3D Objects.
+
+    This class is responsible for loading, transforming, and rendering 3D meshes
+    using OpenGL. It handles the creation of vertex buffer objects, texture binding,
+    and applying transformations to the mesh.
+
+    Attributes:
+        position (pygame.Vector3): The translation position of the mesh.
+        material (Material): The shader program used for rendering the mesh.
+        vertices (list): The vertex data of the mesh.
+        vertex_normals (list): The normal vectors for lighting calculations.
+        vertex_uvs (list): The texture coordinates for the mesh.
+        draw_type (int): The OpenGL draw type (e.g., GL_TRIANGLES).
+        memory_save (bool): Flag for saving memory during rendering.
+        distance_range (float): The rendering distance range for optimization.
+        vao_ref (int): OpenGL reference for the Vertex Array Object.
+        transformation_mat (numpy.ndarray): The transformation matrix for the mesh.
+        texture (Texture): The texture associated with the mesh, if any.
+
+    Parameters:
+        vertices (list): A list of vertex positions.
+        image_file (str, optional): Path to the texture image file.
+        vertex_normals (list, optional): A list of normal vectors.
+        vertex_uvs (list, optional): A list of texture coordinates.
+        vertex_colors (list, optional): A list of vertex colors.
+        draw_type (int): OpenGL draw type for rendering (default: GL_TRIANGLES).
+        translation (pygame.Vector3): Initial translation position (default: (0, 0, 0)).
+        rotation (Rotation): Initial rotation parameters (default: no rotation).
+        scale (pygame.Vector3): Initial scaling factors (default: (1, 1, 1)).
+        move_rotation (Rotation): Rotation to apply during movement.
+        move_translate (pygame.Vector3): Translation to apply during movement.
+        move_scale (pygame.Vector3): Scaling to apply during movement.
+        material (Material, optional): The shader material for rendering.
+        memory_save (bool): Flag to indicate memory-saving mode (default: True).
+        memory_save_chunk (bool): Chunking for memory-saving (default: False).
+        distance_range (float): Distance range for optimization (default: 12).
+        esp_off (bool): Flag to disable debug output (default: False).
+
+    Methods:
+        draw(camera, light) -> None:
+            Renders the mesh using the specified camera and light.
+
+        update(translation, rotation, scale) -> None:
+            Updates the transformation matrix of the mesh based on the new parameters.
+
+    Notes:
+        - The `draw_force` method is used internally to handle the drawing of the mesh
+          with transformations applied.
+        - Ensure that the material provided is properly initialized with valid shader programs.
+        - The `ESP` variable controls debug print statements for development purposes.
     """
     def __init__(self, vertices,
-                 imagefile=None,
+                 image_file=None,
                  vertex_normals=None,
                  vertex_uvs=None,
                  vertex_colors=None,
@@ -73,8 +122,8 @@ class Mesh:
         self.move_scale = move_scale
         self.texture = None
         
-        if imagefile is not None:
-            self.image = Texture(imagefile, esp_off=self.esp_off)
+        if image_file is not None:
+            self.image = Texture(image_file, esp_off=self.esp_off)
             self.texture = Uniform("sampler2D", [self.image.texture_id, 1])
 
     def draw_force(self, camera, light, draw_type_force=None):

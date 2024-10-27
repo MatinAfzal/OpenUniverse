@@ -62,20 +62,25 @@ class MultiShaders(Screen):
         self.image_monalisa = r"Images\mona_lisa.jpg"
         self.image_dinner = r"Images\the_last_dinner.jpg"
 
-        # Attaching objects before super initial to avoid screen crashes
-        # Object Attach
-        self.trees = None
-        self.terrain = None
-        self.threading()
+        self.image_makima1 = r"Images\makima1.jpg"
+        self.image_makima2 = r"Images\makima2.jpg"
+        self.image_kishibe = r"Images\kishibe.jpg"
+        self.image_berserk = r"Images\berserk.jpg"
+        self.image_luffy = r"Images\luffy.jpg"
+        self.image_cicada = r"Images\cicada.jpg"
+        self.image_world = r"Images\world.jpg"
+        self.image_kishibe2 = r"Images\kishibe2.jpg"
+        self.image_kishibe3 = r"Images\kishibe3.jpg"
+        self.image_kishibe4 = r"Images\kishibe4.jpg"
+        self.image_shanks = r"Images\shanks.jpg"
+        self.image_makima10 = r"Images\makima10.jpg"
+        self.image_makima11 = r"Images\makima11.jpg"
+        self.image_makima12 = r"Images\makima12.jpg"
 
         super().__init__(SCREEN_POS_X, SCREEN_POS_Y, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-        self.plane = None
-        self.cube = None
         self.light = None
         self.axes = None
-        self.obj_cube = None
-        self.img_cube = None
         self.mat = None
         self.seed = 0
 
@@ -94,6 +99,8 @@ class MultiShaders(Screen):
 
         # Builder mode
         self.b_counter = 0
+
+        self.f3_counter = 0
 
         # Loads
         if ESP:
@@ -119,83 +126,15 @@ class MultiShaders(Screen):
         if ESP:
             print("Loading Entities...")
         self.axes = Axes(pygame.Vector3(0, 0, 0), axesmat)
-
         self.light_pos = pygame.Vector3(INITIAL_LIGHT_POS_X, INITIAL_LIGHT_POS_Y, INITIAL_LIGHT_POS_Z)
-        self.lightbolb_pos = pygame.Vector3(self.light_pos.x, self.light_pos.y + 5, self.light_pos.z)
         self.light = Light(self.light_pos, pygame.Vector3(1, 1, 1), 0)
         self.camera = Camera(self.screen_width, self.screen_height)
-        self.camera_pos = self.get_cam_pos()
-        self.cube0 = LoadObject(
-            self.obj_cube, imagefile=self.img_sun, draw_type=GL_TRIANGLES, material=self.mat,
-            location=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
         self.start_time = int(time())
 
         # Cell Attaches
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
-        self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_atlas2)  # TREE
-        self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)  # TERRAIN
-        # self.world = CellAttach(self.terrain.layer, shader=self.mat, image=self.img_atlas2)  # IMAGE
-        # self.forest = CellAttach(self.trees.layer, shader=self.mat, image=self.img_cactus)  # CACTUS
-        # self.chunk = Chunk(biome="jungle", position=Vector3(0, 0, 0), img=self.img_texture, material=self.mat)
-
-        # Sky variables
-        self.sky_cycle_lock = False
-        self.sun_cycle_lock = False
-        self.red = 0.0
-        self.green = 0.0
-        self.blue = 0.0
-        self.alpha = 0.5
-
-        # Object control variables
-        self.object_grab = False
-        self.build_object = None
-        self.distance_reset_lock = False
-
-        # Locks
-        self.object_creation_0 = False  # Avoiding memory overflow.
-
-        # Text
-        self.font = pygame.font.SysFont('arial', 30)
-        self.f3_counter = 0
-
-    def threading(self):
-        t1 = threading.Thread(target=self.tree_thread_)
-        t2 = threading.Thread(target=self.terrain_thread_)
-
-        t1.start()
-        t2.start()
-
-        t1.join()
-        t2.join()
-
-    def tree_thread_(self):
-        self.trees = ObjectAttach(object_name="tree", number_x=TREES, number_z=TREES)
-
-    def terrain_thread_(self):
-        self.terrain = ObjectAttach(object_name="chunk", object_type="dirty", number_x=CHUNKS, number_z=CHUNKS)
-
-    def superflat_thread_(self):
-        self.terrain = ObjectAttach(object_name="chunk", object_type="superflat", number_x=CHUNKS, number_z=CHUNKS)
-
-    def image_thread_(self):
-        self.terrain = ObjectAttach(object_name="image", texture=self.image_monalisa)
-
-    def get_cam_pos(self):
-        return int(self.camera.transformation[0, 3]), int(self.camera.transformation[2, 3])
-
-    def builder_handler(self, block):
-        self.build_object = ObjectBuilder(object_type=block, translation=self.camera.target,
-                                          shader=self.mat)
-        self.object_build_status = True
-        self.object_grab = True
-
-    def draw_text(self, x, y, text):
-        text_surface = self.font.render(text, True, (255, 255, 66, 255), (0, 66, 0, 255))
-        text_data = pygame.image.tostring(text_surface, "RGBA", True)
-        glWindowPos2i(x, y)
-        glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
     def initialise(self):
         # Variables
@@ -214,8 +153,6 @@ class MultiShaders(Screen):
         pass
 
     def display(self):
-        # glClearColor(0.5, 0.5 ,0.5, 0.5) # Middle gray
-        # glClearColor(0.58, 0.85, 0.94, 0.5)  # Sky blue
         if SKY_DYNAMIC:
             glClearColor(self.red, self.green, self.blue, self.alpha)  # Sky night
         else:
@@ -223,24 +160,22 @@ class MultiShaders(Screen):
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        if self.f3_counter == 1:
-            self.draw_text(0, SCREEN_HEIGHT - 100, "OpenUniverse")
+        # #####################RENDER#######################
+        self.axes.draw(self.camera, self.light)
+        # #####################RENDER#######################
 
-        #####
         keys = pygame.key.get_pressed()
         if keys[pygame.K_v]:
             if self.v_counter >= 3:
                 self.v_counter = 0
             try:
-                self.world.world_draw_type = self.draw_types[self.v_counter]
-                self.forest.world_draw_type = self.draw_types[self.v_counter]
+                pass
                 if ESP:
                     print("Draw Type switched...")
             except:
                 pass
             try:
-                self.world.load_world()
-                self.forest.load_world()
+                pass
             except:
                 pass
             self.v_counter += 1
@@ -310,121 +245,6 @@ class MultiShaders(Screen):
                     print("Debugger mode enabled...")
 
             sleep(0.3)
-
-        # #####################RENDER#######################
-        glPointSize(10)
-        if self.x_counter == 0:
-            self.axes.draw(self.camera, self.light)
-
-        try:
-            self.world.world.draw(self.camera, self.light)
-            self.forest.world.draw(self.camera, self.light)
-        except:
-            pass
-
-        for build in self.builded_objects:
-            try:
-                build.object.draw(self.camera, self.light)
-            except:
-                continue
-
-        self.cube0.draw(self.camera, self.light)
-
-        # #####################RENDER#######################
-
-        # #####################SUN&SKY######################
-
-        now = int(time())
-        current_time = self.start_time - now
-
-        if current_time % 1 == 0 and SKY_DYNAMIC:
-            if self.green >= 1 and self.blue >= 1:
-                self.sky_cycle_lock = True
-
-            if not self.sky_cycle_lock:
-                self.red = 0
-                self.green += SKY_SPEED
-                self.blue += SKY_SPEED
-
-            if self.sky_cycle_lock:
-                self.red = 0
-                self.green -= SKY_SPEED
-                self.blue -= SKY_SPEED
-
-                if self.green <= 0 and self.blue <= 0:
-                    self.sky_cycle_lock = False
-
-        if current_time % 1 == 0 and self.s_counter == 0 and SUN_STATUS:  # Move
-            if self.light_pos.y < 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.y += SUN_SPEED_Y
-            elif self.light_pos.y >= 120 and self.light_pos.x < 300 and not self.sun_cycle_lock:
-                self.light_pos.x += SUN_SPEED_X
-            elif self.light_pos.y >= 118 and self.light_pos.x >= 298 and not self.sun_cycle_lock:
-                self.sun_cycle_lock = True
-            elif self.sun_cycle_lock:
-                if self.light_pos.y <= -60 and self.sun_cycle_lock:
-                    self.light_pos = Vector3(INITIAL_LIGHT_POS_X, INITIAL_LIGHT_POS_Y, INITIAL_LIGHT_POS_Z)
-                    self.sun_cycle_lock = False
-                else:
-                    self.light_pos.y -= SUN_SPEED_Y
-
-            self.lightbolb_pos = self.light_pos
-            self.cube0.update(translation=self.lightbolb_pos, scale=pygame.Vector3(8, 8, 8))
-            self.light.position = pygame.Vector3(self.light_pos.x, self.light_pos.y, self.light_pos.z)
-            self.light.update(self.mat.program_id)
-
-        if self.s_counter == 2:  # Grab
-            self.distance_reset_lock = False
-            self.cube0.update(translation=self.camera.target)
-            self.object_grab = True
-            self.object_creation_0 = True
-
-        elif self.s_counter in [1, 3] and not self.distance_reset_lock:  # Pause
-            self.distance_reset_lock = True
-            self.object_grab = False
-            self.camera.camera_distance = -10
-
-        # #####################SUN&SKY######################
-
-        # ##################ObjectBuilder###################
-
-        if self.b_counter == 1:
-            # self.mouse_wheel = 0
-            if self.right_click == 0 and not self.object_build_status:
-                self.builder_handler("crate")
-
-            if self.right_click == 1 and not self.object_build_status:
-                self.builder_handler("wood")
-
-            if self.right_click == 2 and not self.object_build_status:
-                self.builder_handler("brick")
-
-            if self.right_click == 3 and not self.object_build_status:
-                self.builder_handler("glass")
-
-            if self.right_click == 4 and not self.object_build_status:
-                self.builder_handler("library")
-
-            if self.right_click == 5 and not self.object_build_status:
-                self.builder_handler("tnt")
-
-            if self.right_click == 6 and not self.object_build_status:
-                self.builder_handler("prison")
-
-            if self.right_click == 7 and not self.object_build_status:
-                self.builder_handler("metal")
-
-            if self.right_click == 7 and not self.object_build_status:
-                self.builder_handler("?")
-
-            if self.object_build_status:
-                try:
-                    self.build_object.update(translation=self.camera.target)
-                    self.build_object.object.draw(self.camera, self.light)
-                finally:
-                    pass
-
-        # ##################ObjectBuilder###################
 
 
 if __name__ == "__main__":

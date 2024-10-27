@@ -1,4 +1,3 @@
-# This file is responsible for creating and updating the world camera
 import pygame
 import math
 import time
@@ -9,7 +8,43 @@ from .Settings2 import *
 
 class Camera:
     """
-    World Camera
+    World Camera for 3D rendering.
+
+    Attributes:
+        transformation (np.ndarray): The transformation matrix for the camera, representing its
+                                      position and orientation in the world.
+        last_mouse (pygame.math.Vector2): The last recorded position of the mouse, used for
+                                           calculating mouse movement.
+        mouse_sensitivity_x (float): Sensitivity for horizontal mouse movement.
+        mouse_sensitivity_y (float): Sensitivity for vertical mouse movement.
+        key_sensitivity (float): Speed at which the camera moves in response to key inputs.
+        projection_mat (np.ndarray): The projection matrix used for rendering the scene.
+        projection (Uniform): Uniform variable to hold the projection matrix for shader programs.
+        screen_width (int): The width of the rendering screen.
+        screen_height (int): The height of the rendering screen.
+        yaw (float): The yaw angle of the camera, representing rotation around the Y-axis.
+        pitch (float): The pitch angle of the camera, representing rotation around the X-axis.
+        camera_distance (float): Distance of the camera from the target point.
+        target (pygame.Vector3): The point in 3D space that the camera is looking at.
+
+    Parameters:
+        width (int): The width of the camera's viewport.
+        height (int): The height of the camera's viewport.
+
+    Methods:
+        perspective_mat(view_angle, aspect_ratio, near_plane, far_plane) -> np.ndarray:
+            Computes the perspective projection matrix based on the provided parameters.
+
+        rotate(yaw, pitch) -> None:
+            Rotates the camera based on the given yaw and pitch values.
+
+        update(program_id) -> None:
+            Updates the camera's transformation and projection matrices based on input.
+
+    Notes:
+        - The camera's position is initialized from the `CAMERA_POSITION` variable.
+        - Input handling for movement is achieved through the keyboard and mouse.
+        - Debugging information can be printed when the 'z' key is pressed.
     """
     def __init__(self, width, height) -> None:
         if ESP:
@@ -32,7 +67,8 @@ class Camera:
         self.camera_distance = -10.0
         self.target = pygame.Vector3(0, 0, 0)
 
-    def perspective_mat(self, view_angle, aspect_ratio, near_plane, far_plane) -> np.ndarray:
+    @staticmethod
+    def perspective_mat(view_angle, aspect_ratio, near_plane, far_plane) -> np.ndarray:
         a = math.radians(view_angle)
         d = 1.0 / math.tan(a/2)
         r = aspect_ratio

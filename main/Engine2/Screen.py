@@ -123,7 +123,6 @@ class Screen:
                             self.mouse_wheel += 1
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # 1 is left click.
-                        self.builded_objects.append(self.build_object)
                         self.object_build_status = False
                     if event.button == 3:  # 3 == Right click
                         if self.right_click >= 7:  # available ObjectBuilder objects

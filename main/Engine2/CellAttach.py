@@ -5,11 +5,52 @@ from .Settings2 import *
 
 class CellAttach:
     """
-    Attach multiple draw cells together
-    - Avoiding draw loops!
-    - One line draw (world.draw()) !
-    """
+    Combines multiple draw cells into a single mesh for efficient rendering.
 
+    This class is designed to attach multiple mesh cells together, avoiding
+    unnecessary draw calls and enabling a single draw operation for the entire
+    combined mesh. It supports threading for attaching vertices, UVs, and normals
+    to improve performance when processing large numbers of cells.
+
+    Attributes:
+        level_name (str): The name of the level associated with the cells.
+        image (str): The image file used as a texture for the mesh.
+        cells (list): A list of mesh cells to be combined.
+        world_formatted_vertices (np.ndarray): Combined vertices formatted for rendering.
+        world_formatted_uvs (np.ndarray): Combined UV coordinates for texturing.
+        world_formatted_normals (np.ndarray): Combined normals for lighting calculations.
+        world_shader (object): The shader program used for rendering the mesh.
+        world (Mesh): The resulting combined mesh object.
+        world_draw_type (int): The OpenGL draw type (e.g., GL_TRIANGLES).
+        colors (list): A list of colors for the mesh vertices.
+        call_time (float): Time taken for the attachment process.
+
+    Parameters:
+        cells (list[object]): A list of cell objects to be attached together.
+        draw_type (int): The OpenGL draw type for the combined mesh (default is GL_TRIANGLES).
+        shader (object, optional): The shader program to be used for the combined mesh.
+        image (str, optional): The image file to be used as a texture for the mesh.
+
+    Methods:
+        attach_vertices() -> None:
+            Attaches the vertices from the provided cells.
+
+        attach_uvs() -> None:
+            Attaches the UV coordinates from the provided cells.
+
+        attach_normals() -> None:
+            Attaches the normals from the provided cells.
+
+        load_world() -> None:
+            Loads the combined mesh into a Mesh object and prepares it for rendering.
+
+    Notes:
+        - This class uses threading to improve performance during the attachment of vertices,
+          UVs, and normals. Ensure thread safety if accessing shared resources.
+        - The method `load_world` is called after the attachments to create the final mesh.
+        - If less than two cells are provided, an error message will be printed and the operation
+          will terminate.
+    """
     def __init__(self, cells: list[object], draw_type=GL_TRIANGLES, shader=None, image=None) -> None:
         if ESP:
             print("Attaching Cells...")
@@ -89,7 +130,7 @@ class CellAttach:
         if self.level_name == "tree1":
             self.world = Mesh(
                 vertices=self.world_formatted_vertices,
-                imagefile=self.image,
+                image_file=self.image,
                 material=self.world_shader,
                 draw_type=self.world_draw_type,
                 vertex_colors=self.colors,
@@ -99,7 +140,7 @@ class CellAttach:
         else:
             self.world = Mesh(
                 vertices=self.world_formatted_vertices,
-                imagefile=self.image,
+                image_file=self.image,
                 material=self.world_shader,
                 draw_type=self.world_draw_type,
                 vertex_colors=self.colors,
