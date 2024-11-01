@@ -1,5 +1,7 @@
 # This file prepares the page with initial processing settings and executes the main loop
 import os
+import sys
+import threading
 import time
 import pygame
 from pygame.locals import *
@@ -17,7 +19,7 @@ class Screen:
     Screen initialization
     """
     def __init__(self, screen_posX, screen_posY, screen_width, screen_height):
-        self.run = True
+        self.loop = False
         self.test_site = None
         if ESP:
             print("Loading Screen...")
@@ -78,7 +80,7 @@ class Screen:
                     print("ESP_VV -> ", error_type)
         if TSS:
             self.test_site.after()
-        self.run = False
+        self.loop = False
 
     def initialise(self):
         pass
@@ -89,17 +91,17 @@ class Screen:
     def camera_init(self):
         pass
 
-    def mainloop(self):
+    def render_loop(self):
         self.initialise()
+        self.loop = True
         if TSS:
             self.test_site.ready()
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
-        while self.run:
+        while self.loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.engine_shutdown()
-                    self.run = False
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.mouse.set_visible(True)

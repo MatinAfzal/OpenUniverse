@@ -1,5 +1,5 @@
-import threading
 import pygame.mouse
+import threading
 from OpenGL.GL import *
 from Engine2.Screen import *
 from Engine2.LoadObject import *
@@ -7,12 +7,8 @@ from Engine2.Light import *
 from Engine2.Material import *
 from Engine2.Axes import *
 from Engine2.CellAttach import *
-from Level.ObjectAttach import *
 from Engine2.Cullings.DistanceCulling import *
-from Level.Shematic import *
-from Level.Chunk import *
-from Level.ManualChunkGen import *
-from Level.ObjectBuilder import *
+from Engine2.Terminal import Terminal
 from time import sleep
 from datetime import datetime
 from time import time
@@ -21,36 +17,11 @@ from time import time
 class MultiShaders(Screen):
 
     def __init__(self):
-        print("---------------------------------------------------------------------")
-        print(BANNER)
-        print("Project repo: https://github.com/MatinAfzal/OpenUniverse")
-        if ESP:
-            print("Starting Engine...")
-        else:
-            print("ESP (ENGINE_STATUS_PRINT) IS OFF!")
-
-        start = datetime.now()
-        print("Starting at:" + str(start.now()))
-
-        print("""
-    OpenUniverse Control Guide:
-        movement: w - a - s - d
-        yaw & pitch: mouse
-        world main axes: x  (0.3 second interrupt)
-        face culling: c     (0.3 second interrupt)
-        view mode: v        (GL_POINTS, GL_LINES, GL_TRIANGLES) (0.3 second interrupt)
-        camera info: z      (1 second interrupt)
-        light control: l    (Pause, Grab, PLace, Continue) (0.3 second interrupt)
-        memory info: m      (1 second interrupt)
-        live debugger: F3   (UNAVAILABLE V1.2.3-beta)
-        builder mode: b     (0.3 second interrupt)
-            - Change block: MouseRightClick
-            - Place Block: MouseLeftClick
-            - Distance: MouseScroll
-        """)
-
-        if ESP:
-            print("---Begin of ENGINE_STATUS_PRINT (ESP) logs---")
+        # powering up terminal
+        lock = threading.Lock()
+        self.terminal = Terminal(lock)
+        t_ic = threading.Thread(target=self.terminal.listener)
+        t_ic.start()
 
         # img
         self.img_texture = r"Textures\texture.png"
@@ -135,6 +106,9 @@ class MultiShaders(Screen):
         cell_start = datetime.now()
         if ESP:
             print("Cell Attach started at:" + str(cell_start.now()))
+
+        # Entry point
+        self.render_loop()
 
     def initialise(self):
         # Variables
@@ -248,7 +222,7 @@ class MultiShaders(Screen):
 
 
 if __name__ == "__main__":
-    MultiShaders().mainloop()
+    MultiShaders()
     if ESP:
         print("Mainloop Ends...")
     if ESP:

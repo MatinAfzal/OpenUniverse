@@ -3,6 +3,9 @@ from OpenGL.GL import GL_LINES
 # Version of the engine
 VERSION = "1.8.8-beta"
 
+# Wall of names
+WON = ["MatinAfzal"]
+
 # World generation parameters
 CHUNKS = 40          # Number of chunks to load in the game world
 TREES = 40           # Number of trees to generate in the game world
@@ -23,8 +26,8 @@ BANNER = f"""
 """
 
 # Debug settings to control logging and error reporting
-ENGINE_STATUS_PRINT = True
-ENGINE_STATUS_PRINT_VERY_VERBOSE = False  # Detailed logging for debugging
+ENGINE_STATUS_PRINT = False
+ENGINE_STATUS_PRINT_VERY_VERBOSE = False    # Detailed logging for debugging
 ENGINE_REPORT_SAVE = False                  # Save error reports to a file
 ENGINE_REPORT_TIME_BASED = False            # Enable time-based reporting
 
@@ -34,7 +37,7 @@ ERT_B = ENGINE_REPORT_TIME_BASED             # Alias for time-based reporting
 ESP_VV = ENGINE_STATUS_PRINT_VERY_VERBOSE    # Alias for verbose logging
 
 # Test site configuration
-TEST_SITE_STATUS = True                      # Enable or disable test site features
+TEST_SITE_STATUS = False                      # Enable or disable test site features
 TEST_SITE_COMMENT = ""                       # Comments regarding the test site
 TSS = TEST_SITE_STATUS                       # Alias for test site status
 
@@ -42,7 +45,7 @@ TSS = TEST_SITE_STATUS                       # Alias for test site status
 DISTANCE_CULLING = True                      # Enable distance-based culling
 DISTANCE_CULLING_DISTANCE = 15               # Max distance for culling objects
 CHUNK_GENERATION_WIDE = 50                   # Width for chunk generation
-PRO_GAP = 100                                 # Gap between generated chunks
+PRO_GAP = 100                                # Gap between generated chunks
 
 # Sky settings for environmental effects
 SKY_DYNAMIC = False                           # Enable dynamic sky effects
@@ -67,7 +70,7 @@ WORLD_COLOR_A = 0.5                           # Alpha component of world color
 # Settings for world axes visualization
 WORLD_AXES_VERTICES = [[-100, 0, 0], [100, 0, 0], [0, -100, 0], [0, 100, 0], [0, 0, -100], [0, 0, 100]]
 WORLD_AXES_COLORS = [[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]]
-WORLD_AXES_DRAWTYPE = GL_LINES               # OpenGL draw type for axes
+WORLD_AXES_DRAWTYPE = GL_LINES                # OpenGL draw type for axes
 
 # Chunk color settings
 CHUNK_COLOR_R = 1                             # Red component of chunk color
@@ -90,11 +93,11 @@ CAMERA_ROTATE_PITCHDOWN_MAX = -170.0          # Max pitch-down angle
 # Screen settings for display properties
 SCREEN_POS_X = 100                            # X position of the screen window
 SCREEN_POS_Y = 30                             # Y position of the screen window
-SCREEN_WIDTH = 1920                           # Width of the screen
-SCREEN_HEIGHT = 1080                          # Height of the screen
+SCREEN_WIDTH = 1000                           # Width of the screen
+SCREEN_HEIGHT = 800                           # Height of the screen
 SCREEN_MULTISAMPLEBUFFERS = 1                 # Number of multisample buffers for anti-aliasing
-SCREEN_MULTISAMPLESAMPLES = 4                  # Samples per pixel for anti-aliasing
+SCREEN_MULTISAMPLESAMPLES = 4                 # Samples per pixel for anti-aliasing
 SCREEN_DEPTH_SIZE = 24                        # Depth buffer size
 SCREEN_CAPTION_LOADING = "Loading..."         # Caption for loading screen
 SCREEN_CAPTION = f"OpenUniverse V [V ANY] from [{VERSION}]"  # Main screen caption
-SCREEN_MAX_FPS = 320                         # Maximum frames per second for the game loop
+SCREEN_MAX_FPS = 30                           # Maximum frames per second for the game loop
