@@ -6,6 +6,10 @@
 
 <h3 align="center">An Open Source Implementation of a 3D Computer Universe</h3>
 
+
+> ⚠️ **Important:**  
+> At the time I was working on this project, my main goal was to get it running on my own machine. It hasn't been optimized for other environments, so you may run into issues.
+
 ---
 
 ## Contents
